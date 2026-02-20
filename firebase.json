@@ -9,27 +9,27 @@
     "redirects": [
       {
         "source": "/api/chat",
-        "destination": "https://a62f4b42-e085-463d-936a-acd752cc23ee-00-jelgvzen34hg.spock.replit.dev/api/chat",
+        "destination": "https://api-gateway--manyse.replit.app/api/chat",
         "type": 307
       },
       {
         "source": "/v1/chat/completions",
-        "destination": "https://a62f4b42-e085-463d-936a-acd752cc23ee-00-jelgvzen34hg.spock.replit.dev/v1/chat/completions",
+        "destination": "https://api-gateway--manyse.replit.app/v1/chat/completions",
         "type": 307
       },
       {
         "source": "/stream",
-        "destination": "https://a62f4b42-e085-463d-936a-acd752cc23ee-00-jelgvzen34hg.spock.replit.dev/stream",
+        "destination": "https://api-gateway--manyse.replit.app/stream",
         "type": 307
       },
       {
         "source": "/health",
-        "destination": "https://a62f4b42-e085-463d-936a-acd752cc23ee-00-jelgvzen34hg.spock.replit.dev/health",
+        "destination": "https://api-gateway--manyse.replit.app/health",
         "type": 307
       },
       {
         "source": "/ping",
-        "destination": "https://a62f4b42-e085-463d-936a-acd752cc23ee-00-jelgvzen34hg.spock.replit.dev/ping",
+        "destination": "https://api-gateway--manyse.replit.app/ping",
         "type": 307
       }
     ],
