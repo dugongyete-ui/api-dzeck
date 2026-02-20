@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/static/img/favicon(Nicoladipa).png" type="image/x-icon">
+    <title>Settings - Api Dzeck Ai</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #212121; color: #ececec; min-height: 100vh; }
+        .header-bar {
+            display: flex; align-items: center; padding: 14px 24px; gap: 12px;
+            border-bottom: 1px solid #2a2a2a; background: #171717; flex-wrap: wrap;
+        }
+        .header-bar img.logo { width: 42px; height: 42px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+        .brand-name { display: flex; align-items: baseline; gap: 0; flex-shrink: 0; }
+        .brand-name .brand-api { font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 500; color: #00a896; letter-spacing: 1.5px; text-transform: uppercase; margin-right: 4px; }
+        .brand-name .brand-dzeck { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; background: linear-gradient(135deg, #00a896, #00c9b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.5px; }
+        .brand-name .brand-ai { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600; color: #00a896; margin-left: 3px; }
+        .nav-links { margin-left: auto; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .nav-links a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 8px; transition: all 0.2s; white-space: nowrap; cursor: pointer; }
+        .nav-links a:hover { background: rgba(255,255,255,0.08); }
+        .container { max-width: 800px; margin: 0 auto; padding: 24px 16px 60px; }
+        .section-title { font-family: 'Space Grotesk', sans-serif; color: #ececec; font-size: 20px; font-weight: 700; margin: 28px 0 14px; padding-bottom: 6px; border-bottom: 2px solid #333; }
+        .section-title:first-of-type { margin-top: 0; }
+        .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #333; gap: 16px; flex-wrap: wrap; }
+        .setting-label { font-weight: 600; color: #d1d1d1; font-size: 15px; min-width: 160px; }
+        .setting-desc { font-size: 12px; color: #888; font-weight: 400; margin-top: 2px; }
+        .toggle-switch { position: relative; width: 52px; height: 28px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #444; transition: 0.3s; border-radius: 28px;
+        }
+        .toggle-slider:before {
+            position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px;
+            background-color: white; transition: 0.3s; border-radius: 50%;
+        }
+        .toggle-switch input:checked + .toggle-slider { background-color: #00a896; }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); }
+        .select-input {
+            padding: 8px 12px; border: 2px solid #444; border-radius: 10px; font-family: 'Inter', sans-serif;
+            font-size: 14px; outline: none; background: #2f2f2f; min-width: 200px; color: #ececec;
+        }
+        .select-input:focus { border-color: #00a896; }
+        .text-input {
+            width: 100%; padding: 10px 14px; border: 2px solid #444; border-radius: 10px;
+            font-family: 'Inter', sans-serif; font-size: 14px; outline: none; background: #2f2f2f; color: #ececec;
+        }
+        .text-input:focus { border-color: #00a896; }
+        textarea.text-input { min-height: 80px; resize: vertical; }
+        .small-input { width: 120px; }
+        .save-btn {
+            width: 100%; padding: 14px; background: #00a896; color: white; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+            transition: opacity 0.2s; margin-top: 28px;
+        }
+        .save-btn:hover { opacity: 0.85; }
+        .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .msg-box { padding: 12px 16px; border-radius: 10px; font-size: 14px; font-weight: 500; margin-bottom: 16px; display: none; }
+        .msg-success { background: rgba(40,167,69,0.15); color: #51cf66; border: 1px solid rgba(40,167,69,0.3); }
+        .msg-error { background: rgba(220,53,69,0.15); color: #ff6b6b; border: 1px solid rgba(220,53,69,0.3); }
+        .token-display { font-family: monospace; background: rgba(0,168,150,0.1); padding: 6px 12px; border-radius: 8px; font-size: 13px; color: #00a896; word-break: break-all; cursor: pointer; }
+        .token-display:hover { background: rgba(0,168,150,0.2); }
+        .user-card {
+            background: #2b2b2b; border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            border: 1px solid #444;
+        }
+        .user-card span { font-weight: 500; color: #ececec; font-size: 14px; }
+        .delete-user-btn {
+            background: none; border: 1px solid #ef4444; color: #ef4444; padding: 4px 12px;
+            border-radius: 8px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif;
+        }
+        .delete-user-btn:hover { background: #ef4444; color: white; }
+        .add-user-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .add-user-row input { flex: 1; min-width: 120px; }
+        .add-user-btn {
+            padding: 8px 16px; background: #00a896; color: white; border: none; border-radius: 10px;
+            font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+        }
+        .add-user-btn:hover { opacity: 0.85; }
+        .loading-overlay {
+            position: fixed; inset: 0; background: rgba(33,33,33,0.9); display: flex;
+            align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 12px;
+        }
+        .spinner { width: 40px; height: 40px; border: 4px solid #444; border-top: 4px solid #00a896; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        @media (max-width: 640px) {
+            .header-bar { padding: 10px 12px; }
+            .brand-name .brand-dzeck, .brand-name .brand-ai { font-size: 22px; }
+            .brand-name .brand-api { font-size: 9px; }
+            .container { padding: 16px 12px 40px; }
+            .setting-row { flex-direction: column; align-items: flex-start; }
+            .select-input { width: 100%; min-width: unset; }
+        }
+        @media (max-width: 400px) {
+            .header-bar { padding: 8px 8px; gap: 6px; }
+            .brand-name .brand-dzeck, .brand-name .brand-ai { font-size: 16px; }
+            .brand-name .brand-api { font-size: 7px; }
+            .nav-links a { font-size: 11px; padding: 3px 5px; }
+            .container { padding: 12px 8px 32px; }
+            .card { padding: 14px; }
+            .card-title { font-size: 14px; }
+            .setting-row label { font-size: 12px; }
+            .select-input, input[type="text"], input[type="number"], input[type="password"], textarea { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <span style="color:#ececec;font-weight:500;font-size:14px;">Loading settings...</span>
+    </div>
+
+    <div class="header-bar">
+        <img class="logo" src="/static/img/favicon(Nicoladipa).png" alt="Logo">
+        <div class="brand-name">
+            <span class="brand-api">API</span>
+            <span class="brand-dzeck">Dzeck</span>
+            <span class="brand-ai">Ai</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Chat</a>
+            <a href="/test-api.html">Test API</a>
+            <a href="/models.html">Models</a>
+            <a id="logout-link" onclick="doLogout()" style="color:#ef4444;">Logout</a>
+        </div>
+    </div>
+
+    <div class="container" id="settings-container" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+            <h1 style="font-family:'Space Grotesk',sans-serif;color:#ececec;font-size:28px;font-weight:700;">Settings</h1>
+            <span id="username-badge" style="font-size:12px;padding:3px 10px;background:rgba(0,168,150,0.15);color:#00a896;border-radius:10px;font-weight:500;"></span>
+        </div>
+
+        <div class="msg-box msg-success" id="msg-success">Settings saved successfully!</div>
+        <div class="msg-box msg-error" id="msg-error"></div>
+
+        <div id="admin-server-section" style="display:none;">
+            <h2 class="section-title">Server</h2>
+
+            <div class="setting-row">
+                <div><span class="setting-label">File Input Support</span></div>
+                <label class="toggle-switch"><input type="checkbox" id="toggle-file_input"><span class="toggle-slider"></span></label>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <span class="setting-label">Private Mode</span>
+                    <div class="setting-desc">Generates an access token when enabled</div>
+                    <div id="token-admin-display" style="margin-top:6px;display:none;">
+                        <span class="setting-desc">Token: </span>
+                        <span class="token-display" id="admin-token" onclick="copyToken(this)" title="Click to copy"></span>
+                    </div>
+                </div>
+                <label class="toggle-switch"><input type="checkbox" id="toggle-private_mode"><span class="toggle-slider"></span></label>
+            </div>
+
+            <div class="setting-row">
+                <div><span class="setting-label">Proxies</span></div>
+                <label class="toggle-switch"><input type="checkbox" id="toggle-proxies"><span class="toggle-slider"></span></label>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <span class="setting-label">Fast API</span>
+                    <div class="setting-desc">Restart server after changing this</div>
+                </div>
+                <label class="toggle-switch"><input type="checkbox" id="toggle-fast_api"><span class="toggle-slider"></span></label>
+            </div>
+
+            <div class="setting-row">
+                <div><span class="setting-label">Show Sources</span></div>
+                <label class="toggle-switch"><input type="checkbox" id="toggle-remove_sources"><span class="toggle-slider"></span></label>
+            </div>
+
+            <div class="setting-row">
+                <div><span class="setting-label">Message History</span></div>
+                <label class="toggle-switch"><input type="checkbox" id="toggle-message_history"><span class="toggle-slider"></span></label>
+            </div>
+
+            <div class="setting-row">
+                <div>
+                    <span class="setting-label">Server Port</span>
+                    <div class="setting-desc">Restart server after changing</div>
+                </div>
+                <input type="number" id="input-port" class="text-input small-input" placeholder="5000">
+            </div>
+
+            <div class="setting-row">
+                <div><span class="setting-label">Input Keyword</span></div>
+                <input type="text" id="input-keyword" class="text-input small-input" placeholder="e.g. input">
+            </div>
+        </div>
+
+        <div id="user-token-section" style="display:none;">
+            <h2 class="section-title">Your Token</h2>
+            <div class="setting-row">
+                <div>
+                    <span class="setting-label">Access Token</span>
+                    <div style="margin-top:6px;">
+                        <span class="token-display" id="user-token" onclick="copyToken(this)" title="Click to copy"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Artificial Intelligence</h2>
+
+        <div class="setting-row">
+            <div><span class="setting-label">A.I. Provider</span></div>
+            <select id="select-provider" class="select-input" onchange="updateModels(false)"></select>
+        </div>
+
+        <div class="setting-row">
+            <div><span class="setting-label">A.I. Model</span></div>
+            <select id="select-model" class="select-input"></select>
+        </div>
+
+        <div style="margin-top:16px;">
+            <span class="setting-label" style="display:block;margin-bottom:8px;">System Prompt</span>
+            <textarea id="input-system_prompt" class="text-input" placeholder="e.g. You're a virtual flight assistant..."></textarea>
+        </div>
+
+        <div id="admin-users-section" style="display:none;">
+            <h2 class="section-title">Users</h2>
+
+            <div class="setting-row">
+                <div><span class="setting-label">Virtual Users</span></div>
+                <label class="toggle-switch"><input type="checkbox" id="toggle-virtual_users"><span class="toggle-slider"></span></label>
+            </div>
+
+            <div id="users-list-container" style="margin-top:12px;"></div>
+
+            <div class="add-user-row" id="add-user-row" style="display:none;">
+                <input type="text" id="new-username" class="text-input" placeholder="Username">
+                <input type="password" id="new-password" class="text-input" placeholder="Password">
+                <button class="add-user-btn" onclick="addUser()">Add User</button>
+            </div>
+        </div>
+
+        <button class="save-btn" id="save-btn" onclick="saveSettings()">Save Settings</button>
+
+        <h2 class="section-title" style="margin-top:36px;">API Keys</h2>
+        <p style="color:#888;font-size:13px;margin-bottom:8px;">Generate API key untuk akses API. Prefix: <b style="color:#00a896;">sk-dzeck-</b></p>
+
+        <div id="api-endpoints-info" style="background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+            <div style="font-size:13px;font-weight:600;color:#00a896;margin-bottom:8px;">API Endpoints</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span style="font-size:12px;color:#888;min-width:100px;">Simple Chat:</span>
+                    <code id="endpoint-simple" style="font-size:12px;color:#ececec;background:#2a2a2a;padding:4px 8px;border-radius:6px;word-break:break-all;flex:1;"></code>
+                    <button onclick="copyText(document.getElementById('endpoint-simple').textContent)" style="padding:3px 10px;border:1px solid #555;border-radius:6px;background:transparent;color:#aaa;cursor:pointer;font-size:11px;white-space:nowrap;">Copy</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span style="font-size:12px;color:#888;min-width:100px;">OpenAI Format:</span>
+                    <code id="endpoint-openai" style="font-size:12px;color:#ececec;background:#2a2a2a;padding:4px 8px;border-radius:6px;word-break:break-all;flex:1;"></code>
+                    <button onclick="copyText(document.getElementById('endpoint-openai').textContent)" style="padding:3px 10px;border:1px solid #555;border-radius:6px;background:transparent;color:#aaa;cursor:pointer;font-size:11px;white-space:nowrap;">Copy</button>
+                </div>
+            </div>
+            <div style="margin-top:10px;padding-top:8px;border-top:1px solid #333;">
+                <div style="font-size:11px;color:#666;margin-bottom:4px;">Contoh penggunaan (Simple Chat):</div>
+                <pre style="font-size:11px;color:#aaa;background:#2a2a2a;padding:8px 10px;border-radius:6px;overflow-x:auto;white-space:pre-wrap;">curl -X POST <span id="example-endpoint"></span>/api/chat \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"text": "Hello!", "provider": "PollinationsAI", "model": "openai"}'</pre>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;">
+            <div>
+                <label style="font-size:12px;color:#aaa;display:block;margin-bottom:4px;">Base URL</label>
+                <select id="apikey-baseurl" class="select-input" style="min-width:160px;">
+                    <option value="replit">Replit URL</option>
+                    <option value="firebase" selected>Firebase (api-dzeck.web.app)</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size:12px;color:#aaa;display:block;margin-bottom:4px;">Provider</label>
+                <select id="apikey-provider" class="select-input" style="min-width:160px;" onchange="updateApiKeyModels()"></select>
+            </div>
+            <div>
+                <label style="font-size:12px;color:#aaa;display:block;margin-bottom:4px;">Model (optional)</label>
+                <select id="apikey-model" class="select-input" style="min-width:160px;"></select>
+            </div>
+            <div>
+                <label style="font-size:12px;color:#aaa;display:block;margin-bottom:4px;">Label (optional)</label>
+                <input type="text" id="apikey-label" class="text-input" placeholder="e.g. My App" style="min-width:140px;">
+            </div>
+            <button class="save-btn" style="margin:0;padding:8px 18px;font-size:14px;" onclick="generateApiKey()">Generate Key</button>
+        </div>
+
+        <div id="apikeys-list" style="margin-top:8px;"></div>
+    </div>
+
+    <script src="/api-config.js"></script>
+    <script>
+        let settingsData = {};
+        let providersModels = {};
+        let currentUsername = '';
+        let isAdmin = false;
+        let usersList = [];
+
+        async function checkAuth() {
+            try {
+                const res = await apiFetch('/api/auth/check');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.logged_in) {
+                        currentUsername = data.username;
+                        isAdmin = data.username === 'admin';
+                        return true;
+                    }
+                }
+            } catch(e) {}
+            window.location.href = '/index.html?msg=login_required';
+            return false;
+        }
+
+        async function loadSettings() {
+            try {
+                const res = await apiFetch('/api/settings/data');
+                if (!res.ok) throw new Error('Failed to load settings');
+                const json = await res.json();
+                settingsData = json.data || json.settings || {};
+                providersModels = json.providers_models || {};
+                const rawUsers = json.users || [];
+                usersList = rawUsers.map(u => typeof u === 'string' ? u : u.username).filter(Boolean);
+                const providers = json.providers || {};
+                populateUI(providers);
+            } catch(e) {
+                showError('Failed to load settings: ' + e.message);
+            }
+        }
+
+        function populateUI(providers) {
+            document.getElementById('username-badge').textContent = currentUsername;
+
+            if (isAdmin) {
+                document.getElementById('admin-server-section').style.display = '';
+                document.getElementById('admin-users-section').style.display = '';
+
+                document.getElementById('toggle-file_input').checked = !!settingsData.file_input;
+                document.getElementById('toggle-private_mode').checked = !!settingsData.token;
+                document.getElementById('toggle-proxies').checked = !!settingsData.proxies;
+                document.getElementById('toggle-fast_api').checked = !!settingsData.fast_api;
+                document.getElementById('toggle-remove_sources').checked = !settingsData.remove_sources;
+                document.getElementById('toggle-message_history').checked = !!settingsData.message_history;
+                document.getElementById('toggle-virtual_users').checked = !!settingsData.virtual_users;
+
+                if (settingsData.token) {
+                    document.getElementById('token-admin-display').style.display = '';
+                    document.getElementById('admin-token').textContent = settingsData.token;
+                }
+
+                document.getElementById('input-port').value = settingsData.port || '';
+                document.getElementById('input-keyword').value = settingsData.keyword || '';
+
+                renderUsers();
+                document.getElementById('toggle-virtual_users').addEventListener('change', function() {
+                    document.getElementById('add-user-row').style.display = this.checked ? 'flex' : 'none';
+                });
+                if (settingsData.virtual_users) {
+                    document.getElementById('add-user-row').style.display = 'flex';
+                }
+            } else {
+                document.getElementById('user-token-section').style.display = '';
+                document.getElementById('user-token').textContent = settingsData.token || '(no token)';
+            }
+
+            const providerSelect = document.getElementById('select-provider');
+            providerSelect.innerHTML = '';
+            const currentProvider = settingsData.provider || '';
+            const providerKeys = Array.isArray(providers) ? providers : Object.keys(providers);
+            if (currentProvider && !providerKeys.includes(currentProvider)) {
+                providerKeys.unshift(currentProvider);
+            }
+            providerKeys.forEach(key => {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = key;
+                if (key === currentProvider) opt.selected = true;
+                providerSelect.appendChild(opt);
+            });
+
+            updateModels(true);
+
+            document.getElementById('input-system_prompt').value = settingsData.system_prompt || '';
+
+            document.getElementById('loading-overlay').style.display = 'none';
+            document.getElementById('settings-container').style.display = '';
+        }
+
+        function updateModels(keepCurrentModel) {
+            const provider = document.getElementById('select-provider').value;
+            const modelSelect = document.getElementById('select-model');
+            const savedModel = settingsData.model || '';
+            modelSelect.innerHTML = '';
+
+            let models = [];
+            if (providersModels[provider]) {
+                models = providersModels[provider];
+            }
+
+            if (models.length === 0) {
+                for (var key in providersModels) {
+                    if (key.toLowerCase() === provider.toLowerCase() && providersModels[key].length > 0) {
+                        models = providersModels[key];
+                        break;
+                    }
+                }
+            }
+
+            if (models.length === 0) {
+                models = ['openai', 'gpt-4'];
+            }
+
+            var selectModel = keepCurrentModel && models.includes(savedModel) ? savedModel : models[0];
+
+            models.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                if (m === selectModel) opt.selected = true;
+                modelSelect.appendChild(opt);
+            });
+
+            if (keepCurrentModel && savedModel && !models.includes(savedModel)) {
+                const opt = document.createElement('option');
+                opt.value = savedModel;
+                opt.textContent = savedModel + ' (custom)';
+                opt.selected = true;
+                modelSelect.insertBefore(opt, modelSelect.firstChild);
+            }
+        }
+
+        function renderUsers() {
+            const container = document.getElementById('users-list-container');
+            container.innerHTML = '';
+            usersList.forEach(user => {
+                if (user === 'admin') return;
+                const card = document.createElement('div');
+                card.className = 'user-card';
+                card.innerHTML = `
+                    <span>${escapeHtml(user)}</span>
+                    <button class="delete-user-btn" onclick="deleteUser('${escapeHtml(user)}')">Delete</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function escapeHtml(str) {
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
+
+        let pendingNewUsers = [];
+        let pendingDeleteUsers = [];
+
+        function addUser() {
+            const usernameInput = document.getElementById('new-username');
+            const passwordInput = document.getElementById('new-password');
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            if (!username || !password) {
+                showError('Username dan password harus diisi!');
+                return;
+            }
+            if (username.length < 3) {
+                showError('Username minimal 3 karakter!');
+                return;
+            }
+            if (password.length < 3) {
+                showError('Password minimal 3 karakter!');
+                return;
+            }
+            if (usersList.includes(username)) {
+                showError('User "' + username + '" sudah ada!');
+                return;
+            }
+            pendingNewUsers.push({ username: username, password: password });
+            usersList.push(username);
+            renderUsers();
+            usernameInput.value = '';
+            passwordInput.value = '';
+            showSuccess('User "' + username + '" ditambahkan. Klik Save Settings untuk menyimpan.');
+        }
+
+        function deleteUser(username) {
+            usersList = usersList.filter(u => u !== username);
+            pendingNewUsers = pendingNewUsers.filter(u => u.username !== username);
+            pendingDeleteUsers.push(username);
+            renderUsers();
+        }
+
+        function copyToken(el) {
+            copyText(el.textContent, el);
+        }
+
+        function copyText(text, feedbackEl) {
+            function showCopied() {
+                if (feedbackEl) {
+                    var orig = feedbackEl.textContent;
+                    feedbackEl.textContent = 'Copied!';
+                    feedbackEl.style.color = '#00a896';
+                    setTimeout(function() { feedbackEl.textContent = orig; feedbackEl.style.color = ''; }, 1500);
+                } else {
+                    showSuccess('Copied to clipboard!');
+                }
+            }
+            function fallbackCopy(t) {
+                var ta = document.createElement('textarea');
+                ta.value = t;
+                ta.setAttribute('readonly', '');
+                ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                try {
+                    var ok = document.execCommand('copy');
+                    if (ok) showCopied();
+                } catch(e) {}
+                document.body.removeChild(ta);
+            }
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(showCopied).catch(function() { fallbackCopy(text); });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        async function saveSettings() {
+            const btn = document.getElementById('save-btn');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+            hideMessages();
+
+            const payload = {
+                username: currentUsername,
+                provider: document.getElementById('select-provider').value,
+                model: document.getElementById('select-model').value,
+                system_prompt: document.getElementById('input-system_prompt').value,
+            };
+
+            if (isAdmin) {
+                payload.file_input = document.getElementById('toggle-file_input').checked;
+                payload.private_mode = document.getElementById('toggle-private_mode').checked;
+                payload.proxies = document.getElementById('toggle-proxies').checked;
+                payload.fast_api = document.getElementById('toggle-fast_api').checked;
+                payload.remove_sources = !document.getElementById('toggle-remove_sources').checked;
+                payload.message_history = document.getElementById('toggle-message_history').checked;
+                payload.virtual_users = document.getElementById('toggle-virtual_users').checked;
+                payload.port = parseInt(document.getElementById('input-port').value) || 5000;
+                payload.keyword = document.getElementById('input-keyword').value;
+                if (pendingNewUsers.length > 0) {
+                    payload.new_users = pendingNewUsers;
+                }
+                if (pendingDeleteUsers.length > 0) {
+                    payload.delete_users = pendingDeleteUsers;
+                }
+            }
+
+            try {
+                const res = await apiFetch('/api/settings/save', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok && (data.success || data.status === 'ok')) {
+                    pendingNewUsers = [];
+                    pendingDeleteUsers = [];
+                    showSuccess(data.message || 'Settings saved successfully!');
+                    setTimeout(() => { loadSettings(); }, 1000);
+                } else {
+                    showError(data.error || data.message || 'Failed to save settings');
+                }
+            } catch(e) {
+                showError('Failed to save: ' + e.message);
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Save Settings';
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('msg-success');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('msg-error');
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function hideMessages() {
+            document.getElementById('msg-success').style.display = 'none';
+            document.getElementById('msg-error').style.display = 'none';
+        }
+
+        async function doLogout() {
+            try { await apiFetch('/api/auth/logout'); } catch(e) {}
+            window.location.href = '/index.html';
+        }
+
+        function updateApiKeyModels() {
+            const provider = document.getElementById('apikey-provider').value;
+            const modelSelect = document.getElementById('apikey-model');
+            modelSelect.innerHTML = '<option value="">All models</option>';
+            let models = providersModels[provider] || [];
+            models.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                modelSelect.appendChild(opt);
+            });
+        }
+
+        async function generateApiKey() {
+            const provider = document.getElementById('apikey-provider').value;
+            const model = document.getElementById('apikey-model').value;
+            const label = document.getElementById('apikey-label').value.trim();
+            const baseUrlChoice = document.getElementById('apikey-baseurl').value;
+            try {
+                const res = await apiFetch('/api/apikeys/generate', {
+                    method: 'POST',
+                    body: JSON.stringify({ provider, model, label, base_url: baseUrlChoice })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const key = data.key;
+                    showSuccess('API Key berhasil dibuat! Provider: ' + provider + (model ? ' | Model: ' + model : '') + ' | Base URL: ' + (key.api_base_url || ''));
+                    document.getElementById('apikey-label').value = '';
+                    if (key.endpoints) {
+                        updateEndpointsDisplay(key.api_base_url, key.endpoints);
+                    }
+                    loadApiKeys();
+                } else {
+                    showError(data.error || 'Failed to generate key');
+                }
+            } catch(e) {
+                showError('Failed: ' + e.message);
+            }
+        }
+
+        function updateEndpointsDisplay(baseUrl, endpoints) {
+            if (endpoints) {
+                document.getElementById('endpoint-simple').textContent = endpoints.chat_simple || '';
+                document.getElementById('endpoint-openai').textContent = endpoints.chat_openai || '';
+                document.getElementById('example-endpoint').textContent = baseUrl || '';
+            }
+        }
+
+        async function loadApiKeys() {
+            try {
+                const res = await apiFetch('/api/apikeys');
+                const data = await res.json();
+                const container = document.getElementById('apikeys-list');
+                container.innerHTML = '';
+
+                if (data.api_base_url && data.endpoints) {
+                    updateEndpointsDisplay(data.api_base_url, data.endpoints);
+                }
+
+                if (!data.keys || data.keys.length === 0) {
+                    container.innerHTML = '<p style="color:#666;font-size:13px;">No API keys yet.</p>';
+                    return;
+                }
+                data.keys.forEach(k => {
+                    const date = new Date(k.created_at * 1000).toLocaleDateString();
+                    const status = k.is_active ? '<span style="color:#00a896;">Active</span>' : '<span style="color:#ef4444;">Disabled</span>';
+                    const keyBaseUrl = k.base_url || data.api_base_url || '';
+                    const keyEndpoints = k.endpoints || {};
+                    const endpointSimple = keyEndpoints.chat_simple || (keyBaseUrl + '/api/chat');
+                    const endpointOpenai = keyEndpoints.chat_openai || (keyBaseUrl + '/v1/chat/completions');
+                    const curlCmd = `curl -X POST ${endpointSimple} \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer ${k.api_key}" \\
+  -d '{"text":"Hello!","provider":"${k.provider}","model":"${k.model || ''}"}'`;
+                    const card = document.createElement('div');
+                    card.style.cssText = 'background:#2a2a2a;border-radius:10px;padding:14px 16px;margin-bottom:10px;';
+                    const keyId = 'key-' + k.id.replace(/[^a-zA-Z0-9]/g, '');
+                    card.innerHTML = `
+                        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:10px;">
+                            <div style="flex:1;min-width:200px;">
+                                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;">
+                                    <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:#034953;color:#fff;font-weight:600;">Provider: ${k.provider}</span>
+                                    ${k.model ? '<span style="font-size:11px;padding:2px 8px;border-radius:4px;background:#17a2b8;color:#fff;font-weight:600;">Model: ' + k.model + '</span>' : ''}
+                                    ${k.label ? '<span style="font-size:11px;padding:2px 8px;border-radius:4px;background:#555;color:#fff;">' + k.label + '</span>' : ''}
+                                </div>
+                                <div style="display:flex;align-items:center;gap:6px;margin:4px 0;">
+                                    <code id="${keyId}" style="font-family:monospace;font-size:13px;color:#ececec;word-break:break-all;flex:1;">${k.api_key}</code>
+                                    <button onclick="copyText('${k.api_key}')" style="padding:3px 10px;border:1px solid #00a896;border-radius:6px;background:rgba(0,168,150,0.1);color:#00a896;cursor:pointer;font-size:11px;white-space:nowrap;font-weight:600;">Copy Key</button>
+                                </div>
+                                <div style="margin-top:8px;padding:10px;background:#1a1a1a;border:1px solid #333;border-radius:8px;">
+                                    <div style="font-size:11px;color:#888;font-weight:600;margin-bottom:6px;">Endpoint Info</div>
+                                    <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;flex-wrap:wrap;">
+                                        <span style="font-size:11px;color:#666;min-width:70px;">Endpoint:</span>
+                                        <code style="font-size:11px;color:#ececec;word-break:break-all;">POST ${endpointSimple}</code>
+                                        <button onclick="copyText('${endpointSimple}')" style="padding:1px 6px;border:1px solid #00a896;border-radius:4px;background:transparent;color:#00a896;cursor:pointer;font-size:10px;">Copy</button>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;flex-wrap:wrap;">
+                                        <span style="font-size:11px;color:#666;min-width:70px;">OpenAI:</span>
+                                        <code style="font-size:11px;color:#ececec;word-break:break-all;">POST ${endpointOpenai}</code>
+                                        <button onclick="copyText('${endpointOpenai}')" style="padding:1px 6px;border:1px solid #00a896;border-radius:4px;background:transparent;color:#00a896;cursor:pointer;font-size:10px;">Copy</button>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;">
+                                        <span style="font-size:11px;color:#666;min-width:70px;">Provider:</span>
+                                        <code style="font-size:11px;color:#ececec;">${k.provider}</code>
+                                    </div>
+                                    <div style="display:flex;align-items:center;gap:4px;margin-bottom:6px;">
+                                        <span style="font-size:11px;color:#666;min-width:70px;">Model:</span>
+                                        <code style="font-size:11px;color:#ececec;">${k.model || '(default)'}</code>
+                                    </div>
+                                    <div style="font-size:11px;color:#555;font-weight:600;margin-bottom:3px;">Contoh cURL:</div>
+                                    <pre style="font-size:10px;color:#aaa;background:#111;padding:6px 8px;border-radius:4px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;margin:0;">${curlCmd}</pre>
+                                    <button onclick="copyText(\`${curlCmd.replace(/`/g, '\\`')}\`)" style="margin-top:4px;padding:2px 8px;border:1px solid #00a896;border-radius:4px;background:transparent;color:#00a896;cursor:pointer;font-size:10px;">Copy cURL</button>
+                                </div>
+                                <div style="font-size:11px;color:#666;margin-top:6px;">Created: ${date} | Uses: ${k.usage_count} | ${status}</div>
+                            </div>
+                            <div style="display:flex;gap:6px;align-self:flex-start;">
+                                <button onclick="toggleKey('${k.id}', ${!k.is_active})" style="padding:4px 12px;border:1px solid #555;border-radius:6px;background:transparent;color:#aaa;cursor:pointer;font-size:12px;">${k.is_active ? 'Disable' : 'Enable'}</button>
+                                <button onclick="deleteKey('${k.id}')" style="padding:4px 12px;border:1px solid #ef4444;border-radius:6px;background:transparent;color:#ef4444;cursor:pointer;font-size:12px;">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch(e) {}
+        }
+
+        async function toggleKey(id, active) {
+            try {
+                await apiFetch('/api/apikeys/' + id + '/toggle', { method: 'POST', body: JSON.stringify({ is_active: active }) });
+                loadApiKeys();
+            } catch(e) {}
+        }
+
+        async function deleteKey(id) {
+            if (!confirm('Delete this API key?')) return;
+            try {
+                await apiFetch('/api/apikeys/' + id, { method: 'DELETE' });
+                loadApiKeys();
+            } catch(e) {}
+        }
+
+        function populateApiKeyProviders() {
+            const select = document.getElementById('apikey-provider');
+            select.innerHTML = '';
+            const providerKeys = Object.keys(providersModels);
+            if (providerKeys.length === 0) {
+                ['Auto', 'PollinationsAI', 'Perplexity', 'TeachAnything', 'Yqcloud'].forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p;
+                    opt.textContent = p;
+                    select.appendChild(opt);
+                });
+            } else {
+                providerKeys.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p;
+                    opt.textContent = p;
+                    select.appendChild(opt);
+                });
+            }
+            updateApiKeyModels();
+        }
+
+        async function init() {
+            const authed = await checkAuth();
+            if (authed) {
+                await loadSettings();
+                populateApiKeyProviders();
+                loadApiKeys();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

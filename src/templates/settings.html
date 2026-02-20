@@ -1,0 +1,715 @@
+<!-- flask settings page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon(Nicoladipa).png') }}" type="image/x-icon">
+    <title>Settings</title>
+</head>
+<body>
+    {% block content %}
+    <!-- Logo on the left and title on the right -->
+    <table class="w-50 m-7">
+        <tr>
+            <td class="m-7">
+                <img src="{{ url_for('static', filename='img/favicon(Nicoladipa).png') }}" width="96" class="inline-block" alt="Logo">
+            </td>
+            <td class="m-7">
+                <div class="brand-name">
+                    <span class="brand-api">API</span>
+                    <span class="brand-dzeck" style="font-size:32px;">Dzeck</span>
+                    <span class="brand-ai" style="font-size:32px;">Ai</span>
+                </div>
+                <h2 class="title blue text-2xl">Settings</h2>
+            </td>
+        </tr>
+    </table>
+
+
+    {% if success_message %}
+    <div class="m-7 mt-4 p-3 rounded-lg" style="background-color: #d4edda; border: 1px solid #c3e6cb;">
+        <p class="text-sm font-semibold" style="color: #155724;">{{ success_message }}</p>
+    </div>
+    {% endif %}
+
+    {% if error_message %}
+    <div class="m-7 mt-4 p-3 rounded-lg" style="background-color: #f8d7da; border: 1px solid #f5c6cb;">
+        <p class="text-sm font-semibold" style="color: #721c24;">Error: {{ error_message }}</p>
+    </div>
+    {% endif %}
+
+    <div class="m-7 mt-2 flex gap-3">
+        <a href="/" class="text-white outline-none inter rounded-lg text-sm px-4 py-2 hover:opacity-95" style="background-color: #034953;">Chat</a>
+        <a href="/test-api" class="text-white outline-none inter rounded-lg text-sm px-4 py-2 hover:opacity-95" style="background-color: #17a2b8;">Test API Endpoints</a>
+        <a href="/logout" class="text-white outline-none inter rounded-lg text-sm px-4 py-2 hover:opacity-95" style="background-color: #6c757d;">Logout</a>
+    </div>
+
+    {% if username == "admin" %}
+    <form class="m-7 mt-10 inter" action="/save" method="post" enctype=multipart/form-data>
+    {% else %}
+    <form class="m-7 mt-10 inter" action="/save/{{ username }}" method="post" enctype=multipart/form-data>
+    {% endif %}
+        <!-- username hidden input -->
+        <input type="hidden" id="username" name="username" value="{{ username }}">
+        {% if username != "admin" %}
+        <h1 class="title blue text-xl">Welcome, {{ username }}!</h1>
+        {% endif %}
+        <table class="table-fixed w-full">
+        {% if username == "admin" %}
+            <h3 class="title blue text-xl">Server</h3>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800" id="set_0"><b>File input support:</b></td>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                {% if data['file_input'] %}
+                    <input type="radio" id="off_rad_0" name="file_input" value="false" class="hidden" oninput="turnOff('on_0', 'off_0', 'set_0')">
+                    <label for="off_rad_0" id="off_0" class="label_gray"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_0" id="file_input" name="file_input" value="true" class="hidden" oninput="turnOn('on_0', 'off_0', 'set_0')" checked>
+                    <label for="on_rad_0" id="on_0" class="label_green"><b>ON</b></label>
+                {% else %}
+                    <input type="radio" id="off_rad_0" name="file_input" value="false" class="hidden" oninput="turnOff('on_0', 'off_0', 'set_0')" checked>
+                    <label for="off_rad_0" id="off_0" class="label_red"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_0" id="file_input" name="file_input" value="true" class="hidden" oninput="turnOn('on_0', 'off_0', 'set_0')">
+                    <label for="on_rad_0" id="on_0" class="label_gray"><b>ON</b></label>
+                {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800" id="set_3">
+                    <b>Private Mode:</b>
+                    <br>
+                    <p id="warning_0" class="text-sm label_darkorange hidden"> <b>Warning:</b> your current token will be deleted </p>
+                    <input name="token" id="token" value="{{ data['token'] }}" class="hidden"/>
+                    {% if data['token']|length > 0 %}
+                    <span id="warning_1" class="text-sm blue inline-block">
+                    {% else %}
+                    <span id="warning_1" class="text-sm blue inline-block hidden">
+                    {% endif %}
+                        <b>Your Token: </b> <i id="token_text" onclick="copyTextToClipboardFromName('token');">{{ data['token'] }}</i>
+                        <img id="copy_icon" src="{{ url_for('static', filename='img/copy(Gregor_Cresnar).png') }}" width="16" class="inline-block" alt="Copy" onclick="copy('token', this.id, 'Copied!');"/>
+                    </span>
+                </td>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                {% if data['token'] %}
+                <input type="radio" id="off_rad_3" name="private_mode" value="false" class="hidden" oninput="turnOff('on_3', 'off_3', 'set_3'); hideWarning('warning_1'); showElement('warning_0');">
+                    <label for="off_rad_3" id="off_3" class="label_gray"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_3" name="private_mode" value="true" class="hidden" oninput="turnOn('on_3', 'off_3', 'set_3'); showWarning('warning_1'); hideElement('warning_0'); createToken('token_text')" checked>
+                    <label for="on_rad_3" id="on_3" class="label_green"><b>ON</b></label>
+                {% else %}
+                    <input type="radio" id="off_rad_3" name="private_mode" value="false" class="hidden" oninput="turnOff('on_3', 'off_3', 'set_3'); hideWarning('warning_1'); showElement('warning_0');" checked>
+                    <label for="off_rad_3" id="off_3" class="label_red"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_3" name="private_mode" value="true" class="hidden" oninput="turnOn('on_3', 'off_3', 'set_3'); showWarning('warning_1'); hideElement('warning_0'); createToken('token_text')">
+                    <label for="on_rad_3" id="on_3" class="label_gray"><b>ON</b></label>
+                {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800" id="set_4">
+                    <b>Proxies:</b>
+                    <br>
+                    {% if data['proxies'] %}
+                    <div id="proxy_list" class="mt-3">
+                        {% else %}
+                    <div id="proxy_list" class="mt-3 hidden">
+                    {% endif %}
+                        <label id="add_proxy_button" class="button outline-none py-1 px-4 rounded-lg darkgreen_bg text-white text-md hover:opacity-95 w-24 mt-5" onclick="addProxy();">Add Proxy</label>
+                        <br>
+                        <p class="text-sm mb-2 mt-4"> <b> Your Proxies: </b></p>
+                        <div id="proxy_list_div">
+                            {% for proxy in proxies %}
+                                <!-- proxy form: protocol://user:password@ip:port -->
+                                <div class="flex justify-start mb-3" id="proxy_div_{{ loop.index }}">
+                                    <input type="text" id="proxy_{{ loop.index }}" name="proxy_{{ loop.index }}" class="input outline-none py-1 px-2 rounded-lg inter w-full" onchange="warnProxySyntax(this.value, this.id);" placeholder="protocol://user:password@host:port" value="{{ proxy['protocol'] }}://{{ proxy['username_{{loop.index}}ame'] }}:{{ proxy['password'] }}@{{ proxy['ip'] }}:{{ proxy['port'] }}">
+                                    <img id="delete_icon_{{ loop.index }}" src="{{ url_for('static', filename='img/delete(Anggara).png') }}" width="32" class="inline-block mx-2 p-1 hover:brightness-125" alt="Delete" onclick="deleteElement('proxy_div_{{ loop.index }}');"/>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </td>
+                <td class="py-1 fond-bold inter darkblue text-lg align-top">
+                {% if data['proxies'] %}
+                    <input type="radio" id="off_rad_4" name="proxies" value="false" class="hidden" oninput="turnOff('on_4', 'off_4', 'set_4'); hideElement('proxy_list');">
+                    <label for="off_rad_4" id="off_4" class="label_gray"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_4" name="proxies" value="true" class="hidden" oninput="turnOn('on_4', 'off_4', 'set_4'); showElement('proxy_list');" checked>
+                    <label for="on_rad_4" id="on_4" class="label_green"><b>ON</b></label>
+                {% else %}
+                    <input type="radio" id="off_rad_4" name="proxies" value="false" class="hidden" oninput="turnOff('on_4', 'off_4', 'set_4'); hideElement('proxy_list');" checked>
+                    <label for="off_rad_4" id="off_4" class="label_red"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_4" name="proxies" value="true" class="hidden" oninput="turnOn('on_4', 'off_4', 'set_4'); showElement('proxy_list');">
+                    <label for="on_rad_4" id="on_4" class="label_gray"><b>ON</b></label>
+                {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800" id="set_5">
+                    <b>Fast API:</b>
+                    <br>
+                    <p id="warning_2" class="text-sm label_darkorange hidden"> <b>Warning:</b> the Fast API shutdown will take effect only after you've manually restarted the server </p>
+                </td>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                {% if data['fast_api'] %}
+                <input type="radio" id="off_rad_5" name="fast_api" value="false" class="hidden" oninput="turnOff('on_5', 'off_5', 'set_5'); showElement('warning_2');">
+                    <label for="off_rad_5" id="off_5" class="label_gray"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_5" name="fast_api" value="true" class="hidden" oninput="turnOn('on_5', 'off_5', 'set_5'); hideElement('warning_2');" checked>
+                    <label for="on_rad_5" id="on_5" class="label_green"><b>ON</b></label>
+                {% else %}
+                    <input type="radio" id="off_rad_5" name="fast_api" value="false" class="hidden" oninput="turnOff('on_5', 'off_5', 'set_5'); showElement('warning_2');" checked>
+                    <label for="off_rad_5" id="off_5" class="label_red"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_5" name="fast_api" value="true" class="hidden" oninput="turnOn('on_5', 'off_5', 'set_5'); hideElement('warning_2');">
+                    <label for="on_rad_5" id="on_5" class="label_gray"><b>ON</b></label>
+                {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800">
+                    <b>Server port:</b>
+                    <br>
+                    <p id="warning_3" class="text-sm label_darkorange hidden"> <b>Warning:</b> the port change will take effect only after you've manually restarted the server </p>
+                </td>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                    <b>
+                        <input type="number" id="port" name="port" class="input outline-none py-1 px-2 rounded-lg inter w-24" placeholder="Port" value="{{ data['port'] }}" onchange="showElement('warning_3')">
+                    </b>
+                </td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800"><b>Cookies:</b></td>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                    <b>
+                        <input type="file" id="cookie_file" name="cookie_file" class="input outline-none py-1 px-2 rounded-lg inter w-24 fileholder" placeholder="Cookies" value="{{ data['cookie_file'] }}" accept=".json" oninput="changeButton('cookies_button')" hidden>
+                        <label for="cookie_file" id="cookies_button" class="text-white darkblue_bg outline-none focus:outline-none inter rounded-lg text-md px-4 py-1 text-center inline-flex items-center me-2 hover:opacity-95">
+                            <img src="{{ url_for('static', filename='img/upload(IlhamFitrotulHayat).png') }}" class="w-4 h-4 me-2"/>
+                            Upload
+                        </label>
+                    </b>
+                </td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800"><b>Input keyword:</b></td>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                    <b>
+                        <input type="text" id="keyword" name="keyword" class="input outline-none py-1 px-2 rounded-lg inter w-24" placeholder="i.e. input" value="{{ data['keyword'] }}" suggested="text"></input>
+                    </b>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800" id="set_3">
+                    <b>Your Token:</b>
+                    <input name="token" id="token" value="{{ data['token'] }}" class="hidden"/>
+                </td>
+                <td>
+                    <span class="text-sm blue inline-block">
+                        <i id="token_text" onclick="copyTextToClipboardFromName('token');">{{ data['token'] }}</i>
+                        <img id="copy_icon" src="{{ url_for('static', filename='img/copy(Gregor_Cresnar).png') }}" width="16" class="inline-block" alt="Copy" onclick="copy('token', this.id, 'Copied!');"/>
+                    </span>
+                </td>
+            </tr>
+        {% endif %}
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800 pb-3">
+                    <b>Password:</b>
+                    <div id="password_update" class="mt-4 hidden">
+                        <p class="text-sm"> <b> Set Password </b></p>
+                        <input type="password" id="new_password" name="new_password" class="input outline-none py-1 px-2 rounded-lg inter" placeholder="Your new Password" onchange="enableSaveButton();" oninput="validatePasswordLength();" autocomplete="new-password" minlength="8"></input>
+                        <p class="text-sm mt-4"> <b> Confirm Password </b></p>
+                        <input type="password" id="confirm_password" name="confirm_password" class="input outline-none py-1 px-2 rounded-lg inter" placeholder="New Password Again" onchange="enableSaveButton();" oninput="validatePasswordLength();" autocomplete="new-password" minlength="8"></input>
+                        <p id="error_password_length" class="text-sm label_red mt-1 hidden"> <b> Error: </b> Password must be at least 8 characters long </p>
+                        <p id="error_password" class="text-sm label_red mt-1 hidden"> <b> Error: </b> Passwords do not match </p>
+                        <p id="success_password" class="text-sm label_green mt-1 hidden"> 
+                            <b> Success: </b> Passwords match and meet requirements. <br> 
+                            <i> When entering the old password below to confirm, the password will be updated </i>
+                        </p>
+                    </div>
+                </td>
+                <td class="py-1 fond-bold inter darkblue text-lg align-top">
+                    <b>
+                        <label id="open_password_update"  class="text-white darkblue_bg outline-none focus:outline-none inter rounded-lg text-md px-4 py-1 text-center inline-flex items-center me-2 hover:opacity-95" onclick="openPasswordUpdate(); enableSaveButton();">
+                            <img src="{{ url_for('static', filename='img/update(Becris).png') }}" class="w-4 h-4 me-2"/>
+                            Update
+                        </label>
+                        <label id="cancel_password_update" class="text-white darkred_bg outline-none focus:outline-none inter rounded-lg text-md px-4 py-1 text-center inline-flex items-center me-2 hover:opacity-95 hidden" onclick="cancelPasswordUpdate(); enableSaveButton();">
+                            <img src="{{ url_for('static', filename='img/close(Bharat).png') }}" class="w-5 h-5 me-2"/>
+                            Cancel
+                        </label>
+                    </b>
+                </td>
+            </tr>
+            <tr>
+                <td class="title blue text-xl pt-5">Artificial Intelligence</td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800"><b>A.I. Provider:</b></td>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                    <b>
+                        <select name="provider" id="provider" class="input outline-none py-1 px-2 rounded-lg inter w-24" onchange="updateModels(this.value)">
+                            <option value="{{ data['provider'] }}"> {{ data['provider'] }} </option>
+                            {% for key, value in providers.items() %}
+                                {% if key != data['provider'] %}
+                                <option value="{{ key }}"> {{ key }} </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </b>
+                </td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800" id="set_1"><b>Show sources:</b></td>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                {% if data['remove_sources'] %}
+                <input type="radio" id="off_rad_1" name="remove_sources" value="true" class="hidden" oninput="turnOff('on_1', 'off_1', 'set_1')" checked>
+                    <label for="off_rad_1" id="off_1" class="label_red"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_1" name="remove_sources" value="false" class="hidden" oninput="turnOn('on_1', 'off_1', 'set_1')">
+                    <label for="on_rad_1" id="on_1" class="label_gray"><b>ON</b></label>
+                {% else %}
+                    <input type="radio" id="off_rad_1" name="remove_sources" value="true" class="hidden" oninput="turnOff('on_1', 'off_1', 'set_1')">
+                    <label for="off_rad_1" id="off_1" class="label_gray"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_1" name="remove_sources" value="false" class="hidden" oninput="turnOn('on_1', 'off_1', 'set_1')" checked>
+                    <label for="on_rad_1" id="on_1" class="label_green"><b>ON</b></label>
+                {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800" id="set_2"><b>Message history:</b></td>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                {% if data['message_history'] %}
+                <input type="radio" id="off_rad_2" name="message_history" value="false" class="hidden" oninput="turnOff('on_2', 'off_2', 'set_2')">
+                    <label for="off_rad_2" id="off_2" class="label_gray"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_2" name="message_history" value="true" class="hidden" oninput="turnOn('on_2', 'off_2', 'set_2')" checked>
+                    <label for="on_rad_2" id="on_2" class="label_green"><b>ON</b></label>
+                {% else %}
+                    <input type="radio" id="off_rad_2" name="message_history" value="false" class="hidden" oninput="turnOff('on_2', 'off_2', 'set_2')" checked>
+                    <label for="off_rad_2" id="off_2" class="label_red"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_2" name="message_history" value="true" class="hidden" oninput="turnOn('on_2', 'off_2', 'set_2')">
+                    <label for="on_rad_2" id="on_2" class="label_gray"><b>ON</b></label>
+                {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800"><b>A.I. Model:</b></td>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                    <b>
+                        <select name="model" id="model" class="input outline-none py-1 px-2 rounded-lg inter w-24">
+                            <option value="{{ data['model'] }}"> {{ data['model'] }} </option>
+                            {% if data['provider'] == "Auto" %}
+                                {% for model in generic_models %}
+                                    <option value="{{ model }}"> {{ model }} </option>
+                                {% endfor %}
+                            {% else %}
+                                {% for model in providers[data['provider']].models %}
+                                    <option value="{{ model }}"> {{ model }} </option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </b>
+                </td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                    <b>System Prompt:</b>
+                    <textarea type="text" id="system_prompt" name="system_prompt" class="input outline-none py-1 px-2 my-2 rounded-lg inter w-full font-normal" placeholder="i.e. You're a virtual flight assistant, from now on follow your role for every answer.">{{ data['system_prompt'] }}</textarea>
+                </td>
+            </tr>
+            {% if username == "admin" %}
+            <tr>
+                <td class="title blue text-xl pt-5">Users</td>
+            </tr>
+            <tr>
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800" id="set_6"><b>Virtual Users:</b></td>
+                <td class="py-1 fond-bold inter darkblue text-lg">
+                {% if data['virtual_users'] %}
+                    <input type="radio" id="off_rad_6" name="virtual_users" value="false" class="hidden" oninput="turnOff('on_6', 'off_6', 'set_6'); hideElementClass('user')">
+                    <label for="off_rad_6" id="off_6" class="label_gray"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_6" id="virtual_users" name="virtual_users" value="true" class="hidden" oninput="turnOn('on_6', 'off_6', 'set_6'); showElementClass('user')" checked>
+                    <label for="on_rad_6" id="on_6" class="label_green"><b>ON</b></label>
+                {% else %}
+                    <input type="radio" id="off_rad_6" name="virtual_users" value="false" class="hidden" oninput="turnOff('on_6', 'off_6', 'set_6'); hideElementClass('user')" checked>
+                    <label for="off_rad_6" id="off_6" class="label_red"><b>OFF</b></label>
+                    <p class="inline-block mx-1"> - </p>
+                    <input type="radio" id="on_rad_6" id="virtual_users" name="virtual_users" value="true" class="hidden" oninput="turnOn('on_6', 'off_6', 'set_6'); showElementClass('user')">
+                    <label for="on_rad_6" id="on_6" class="label_gray"><b>ON</b></label>
+                {% endif %}
+                </td>
+            </tr>
+            {% if data['virtual_users'] %}
+            <tr id="add_user" class="user">
+            {% else %}
+            <tr id="add_user" class="user hidden">
+            {% endif %}
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800">
+                    <div>
+                        <div class="flex justify-start mb-3">
+                            <input type="text" id="new_user" class="input outline-none py-1 px-2 rounded-lg inter" placeholder="Create a new user..." value="" onchange="showElement('ELEMENT')" readonly>
+                        </div>
+                        <div class="flex justify-start mb-3" id="new_user_password_div" style="display:none;">
+                            <input type="text" id="new_user_password" name="new_user_password" class="input outline-none py-1 px-2 rounded-lg inter" placeholder="Password (kosong = sama dengan username)" value="">
+                        </div>
+                        <div id="new_user_created_info" class="hidden p-2 rounded-lg mb-2" style="background-color: #d4edda; border: 1px solid #c3e6cb;">
+                            <p class="text-sm" style="color: #155724;"><b>User berhasil ditambahkan!</b></p>
+                            <p class="text-sm" style="color: #155724;">Username: <b id="created_username_display"></b></p>
+                            <p class="text-sm" style="color: #155724;">Password: <b id="created_password_display"></b></p>
+                        </div>
+                    </div>
+                </td>
+                <td class="py-1 fond-bold inter darkblue text-lg align-top">
+                    <button type="button" id="add_user_0" class="text-white darkgreen_bg outline-none focus:outline-none inter rounded-lg text-md px-4 py-1 text-center inline-flex items-center me-2 hover:opacity-95" onclick="enableEditing('new_user'); replaceElement(this.id, 'confirm_user_0'); focusOnInput('new_user'); document.getElementById('new_user_password_div').style.display='flex';">
+                        <img src="{{ url_for('static', filename='img/add(PixelPerfect).png') }}" class="w-3.5 h-3.5 me-2"/>
+                        <b>Add</b>
+                    </button>
+                    <button type="button" id="confirm_user_0" class="text-white darkgreen_bg outline-none focus:outline-none inter rounded-lg text-md px-4 py-1 text-center inline-flex items-center me-2 hover:opacity-95 hidden" onclick="disableEditing('new_user'); replaceElement(this.id, 'add_user_0'); addUserWithPassword('new_user', 'new_user_password'); document.getElementById('new_user_password_div').style.display='none';">
+                        <img src="{{ url_for('static', filename='img/check(iconmasadepan).png') }}" class="w-3.5 h-3.5 me-2"/>
+                        <b>Confirm</b>
+                    </button>
+                </td>
+            </tr>
+            {% for user in users_data %}
+
+            <tr id="user_{{user.token}}" class="user">
+                <td class="py-1 fond-bold inter darkblue text-lg border-b border-slate-800">
+                    <div>
+                        <div class="flex justify-start mb-3">
+                            <img id="delete_icon" src="{{ url_for('static', filename='img/delete(Anggara).png') }}" width="32" class="inline-block mx-2 p-0.5 hover:brightness-125" alt="Delete" onclick="deleteUserFromDB('{{user.username}}', 'user_{{user.token}}');"/>
+                            <input type="text" id="username_{{user.token}}" name="username_{{user.token}}" class="input outline-none py-1 px-2 rounded-lg inter" placeholder="username_{{user.token}}" value="{{user['username']}}" onchange="showElement('ELEMENT')" readonly>
+                        </div>
+                    </div>
+                </td>
+                <td class="py-1 fond-bold inter darkblue text-lg align-top">
+                    <button type="button" id="edit_user_{{user.token}}" class="text-white darkblue_bg outline-none focus:outline-none inter rounded-lg text-md px-4 py-1 text-center inline-flex items-center me-2 hover:opacity-95" onclick="enableEditing('username_{{user.token}}'); replaceElement(this.id, 'confirm_user_{{user.token}}'); focusOnInput('username_{{user.token}}')">
+                        <img src="{{ url_for('static', filename='img/edit(PixelPerfect).png') }}" class="w-3.5 h-3.5 me-2"/>
+                        <b>Edit</b>
+                    </button>
+                    <button type="button" id="confirm_user_{{user.token}}" class="text-white darkgreen_bg outline-none focus:outline-none inter rounded-lg text-md px-4 py-1 text-center inline-flex items-center me-2 hover:opacity-95 hidden" onclick="disableEditing('username_{{user.token}}'); replaceElement(this.id, 'edit_user_{{user.token}}')">
+                        <img src="{{ url_for('static', filename='img/check(iconmasadepan).png') }}" class="w-3.5 h-3.5 me-2"/>
+                        <b>Confirm</b>
+                    </button>
+                </td>
+            </tr>
+            
+            {% endfor %}
+            {% endif %}
+        </table>
+        <div class="flex justify-start mt-8">
+            <button type="submit" id="save" class="button outline-none py-3 px-6 rounded-lg darkblue_bg inter text-white text-md hover:opacity-95 cursor-pointer">Save and Apply</button>
+        </div>
+    </form>
+
+    <div class="m-7 mt-10 inter">
+        <h3 class="title blue text-xl">API Keys</h3>
+        <p class="text-sm darkblue mt-1 mb-4">Generate API key untuk akses API. Prefix: <b>sk-dzeck-</b></p>
+
+        <div id="api-endpoints-box" class="p-3 rounded-lg mb-4" style="background:#1a2a2d;border:1px solid #2a3a3d;">
+            <p class="text-sm blue mb-2" style="font-weight:600;">API Endpoints</p>
+            <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs darkblue" style="min-width:90px;">Simple Chat:</span>
+                    <code id="endpoint-simple" class="text-xs" style="color:#ececec;background:#1e2a2d;padding:3px 6px;border-radius:4px;word-break:break-all;flex:1;"></code>
+                    <button type="button" onclick="copyTextReplit(document.getElementById('endpoint-simple').textContent)" class="text-xs px-2 py-1 rounded" style="border:1px solid #00a896;color:#00a896;background:transparent;cursor:pointer;">Copy</button>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs darkblue" style="min-width:90px;">OpenAI Format:</span>
+                    <code id="endpoint-openai" class="text-xs" style="color:#ececec;background:#1e2a2d;padding:3px 6px;border-radius:4px;word-break:break-all;flex:1;"></code>
+                    <button type="button" onclick="copyTextReplit(document.getElementById('endpoint-openai').textContent)" class="text-xs px-2 py-1 rounded" style="border:1px solid #00a896;color:#00a896;background:transparent;cursor:pointer;">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-4 items-end">
+            <div>
+                <label class="text-xs darkblue block mb-1">Base URL</label>
+                <select id="apikey-baseurl" class="input outline-none py-1 px-2 rounded-lg inter">
+                    <option value="replit">Replit URL</option>
+                    <option value="firebase">Firebase (api-dzeck.web.app)</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-xs darkblue block mb-1">Provider</label>
+                <select id="apikey-provider" class="input outline-none py-1 px-2 rounded-lg inter" onchange="updateApiKeyModels()"></select>
+            </div>
+            <div>
+                <label class="text-xs darkblue block mb-1">Model (opsional)</label>
+                <select id="apikey-model" class="input outline-none py-1 px-2 rounded-lg inter"></select>
+            </div>
+            <div>
+                <label class="text-xs darkblue block mb-1">Label (opsional)</label>
+                <input type="text" id="apikey-label" class="input outline-none py-1 px-2 rounded-lg inter" placeholder="e.g. My App">
+            </div>
+            <button type="button" class="button outline-none py-1 px-4 rounded-lg darkgreen_bg text-white text-md hover:opacity-95" onclick="generateApiKey()">Generate Key</button>
+        </div>
+
+        <div id="apikey-msg-success" class="hidden p-2 rounded-lg mb-3" style="background-color: #d4edda; border: 1px solid #c3e6cb;">
+            <p class="text-sm" style="color: #155724;" id="apikey-msg-text"></p>
+        </div>
+        <div id="apikey-msg-error" class="hidden p-2 rounded-lg mb-3" style="background-color: #f8d7da; border: 1px solid #f5c6cb;">
+            <p class="text-sm" style="color: #721c24;" id="apikey-err-text"></p>
+        </div>
+
+        <div id="apikeys-list"></div>
+    </div>
+
+    {% endblock %}
+</body>
+<!-- script import -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}" type="text/javascript"></script>
+<script>
+function updateModels(provider) {
+    var modelSelect = document.getElementById('model');
+    if (!modelSelect) return;
+    var currentModel = modelSelect.value;
+    fetch('/models?provider=' + encodeURIComponent(provider))
+        .then(function(res) { return res.json(); })
+        .then(function(models) {
+            modelSelect.innerHTML = '';
+            if (models.length === 0) {
+                var opt = document.createElement('option');
+                opt.value = 'default';
+                opt.textContent = 'default';
+                modelSelect.appendChild(opt);
+                return;
+            }
+            var foundCurrent = false;
+            models.forEach(function(m) {
+                var opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                if (m === currentModel) {
+                    opt.selected = true;
+                    foundCurrent = true;
+                }
+                modelSelect.appendChild(opt);
+            });
+            if (!foundCurrent) {
+                modelSelect.options[0].selected = true;
+            }
+        })
+        .catch(function(err) {
+            console.error('Failed to load models:', err);
+        });
+}
+
+var apikeyProvidersModels = {};
+
+function initApiKeys() {
+    fetch('/models?format=json')
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (Array.isArray(data)) return;
+            apikeyProvidersModels = data;
+            var sel = document.getElementById('apikey-provider');
+            if (!sel) return;
+            sel.innerHTML = '';
+            Object.keys(data).forEach(function(p) {
+                var opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                sel.appendChild(opt);
+            });
+            updateApiKeyModels();
+        })
+        .catch(function() {
+            var sel = document.getElementById('apikey-provider');
+            if (!sel) return;
+            ['Auto','PollinationsAI','Perplexity','TeachAnything','Yqcloud'].forEach(function(p) {
+                var opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                sel.appendChild(opt);
+            });
+        });
+    loadApiKeys();
+}
+
+function updateApiKeyModels() {
+    var provider = document.getElementById('apikey-provider').value;
+    var sel = document.getElementById('apikey-model');
+    sel.innerHTML = '<option value="">Semua model</option>';
+    var models = apikeyProvidersModels[provider] || [];
+    models.forEach(function(m) {
+        var opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        sel.appendChild(opt);
+    });
+}
+
+function copyTextReplit(text) {
+    function showCopied() {
+        var msgEl = document.getElementById('apikey-msg-text');
+        if (msgEl) {
+            msgEl.textContent = 'Copied to clipboard!';
+            document.getElementById('apikey-msg-success').classList.remove('hidden');
+            setTimeout(function() { document.getElementById('apikey-msg-success').classList.add('hidden'); }, 2000);
+        }
+    }
+    function fallbackCopy(t) {
+        var ta = document.createElement('textarea');
+        ta.value = t;
+        ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try {
+            var ok = document.execCommand('copy');
+            if (ok) showCopied();
+        } catch(e) {}
+        document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(showCopied).catch(function() { fallbackCopy(text); });
+    } else {
+        fallbackCopy(text);
+    }
+}
+
+function updateEndpointsReplit(baseUrl, endpoints) {
+    var el1 = document.getElementById('endpoint-simple');
+    var el2 = document.getElementById('endpoint-openai');
+    if (el1 && endpoints) el1.textContent = endpoints.chat_simple || '';
+    if (el2 && endpoints) el2.textContent = endpoints.chat_openai || '';
+}
+
+function generateApiKey() {
+    var provider = document.getElementById('apikey-provider').value;
+    var model = document.getElementById('apikey-model').value;
+    var label = document.getElementById('apikey-label').value.trim();
+    var baseUrlChoice = document.getElementById('apikey-baseurl').value;
+    fetch('/api/apikeys/generate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({provider: provider, model: model, label: label, base_url: baseUrlChoice})
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            document.getElementById('apikey-msg-text').textContent = 'API Key berhasil dibuat! Provider: ' + provider + (model ? ' | Model: ' + model : '') + ' | Base URL: ' + (data.key.api_base_url || '');
+            document.getElementById('apikey-msg-success').classList.remove('hidden');
+            document.getElementById('apikey-msg-error').classList.add('hidden');
+            document.getElementById('apikey-label').value = '';
+            if (data.key && data.key.endpoints) {
+                updateEndpointsReplit(data.key.api_base_url, data.key.endpoints);
+            }
+            loadApiKeys();
+        } else {
+            document.getElementById('apikey-err-text').textContent = data.error || 'Gagal generate key';
+            document.getElementById('apikey-msg-error').classList.remove('hidden');
+            document.getElementById('apikey-msg-success').classList.add('hidden');
+        }
+    })
+    .catch(function(e) {
+        document.getElementById('apikey-err-text').textContent = 'Error: ' + e.message;
+        document.getElementById('apikey-msg-error').classList.remove('hidden');
+    });
+}
+
+function loadApiKeys() {
+    fetch('/api/apikeys')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        var container = document.getElementById('apikeys-list');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (data.api_base_url && data.endpoints) {
+            updateEndpointsReplit(data.api_base_url, data.endpoints);
+        }
+
+        if (!data.keys || data.keys.length === 0) {
+            container.innerHTML = '<p class="text-sm darkblue">Belum ada API key.</p>';
+            return;
+        }
+        data.keys.forEach(function(k) {
+            var date = new Date(k.created_at * 1000).toLocaleDateString();
+            var status = k.is_active ? '<span class="label_green">Active</span>' : '<span class="label_red">Disabled</span>';
+            var keyBaseUrl = k.base_url || data.api_base_url || '';
+            var keyEndpoints = k.endpoints || {};
+            var endpointSimple = keyEndpoints.chat_simple || (keyBaseUrl + '/api/chat');
+            var endpointOpenai = keyEndpoints.chat_openai || (keyBaseUrl + '/v1/chat/completions');
+            var curlExample = 'curl -X POST ' + endpointSimple + ' \\\n  -H "Content-Type: application/json" \\\n  -H "Authorization: Bearer ' + k.api_key + '" \\\n  -d \'{"text":"Hello!","provider":"' + k.provider + '","model":"' + (k.model || '') + '"}\'';
+            var postExample = 'POST ' + endpointSimple + '\n{"text":"Hello!","provider":"' + k.provider + '","model":"' + (k.model || '') + '"}';
+            var div = document.createElement('div');
+            div.className = 'p-3 rounded-lg mb-3';
+            div.style.cssText = 'background:#1e2a2d;border:1px solid #2a3a3d;';
+            div.innerHTML = '<div class="flex flex-wrap justify-between items-start gap-2">' +
+                '<div style="flex:1;min-width:200px;">' +
+                '<div class="flex flex-wrap gap-2 mb-1">' +
+                '<span class="text-xs px-2 py-0.5 rounded" style="background:#034953;color:#fff;font-weight:600;">Provider: ' + k.provider + '</span>' +
+                (k.model ? '<span class="text-xs px-2 py-0.5 rounded" style="background:#17a2b8;color:#fff;font-weight:600;">Model: ' + k.model + '</span>' : '') +
+                (k.label ? '<span class="text-xs px-2 py-0.5 rounded" style="background:#6c757d;color:#fff;">' + k.label + '</span>' : '') +
+                '</div>' +
+                '<div class="flex items-center gap-2 mt-1">' +
+                '<code class="text-sm blue" style="font-family:monospace;word-break:break-all;flex:1;">' + k.api_key + '</code>' +
+                '<button type="button" onclick="copyTextReplit(\'' + k.api_key + '\')" class="text-xs px-2 py-1 rounded" style="border:1px solid #00a896;color:#00a896;background:transparent;cursor:pointer;white-space:nowrap;font-weight:600;">Copy Key</button>' +
+                '</div>' +
+                '<div class="mt-2 p-2 rounded" style="background:#162225;border:1px solid #1e3035;">' +
+                '<p class="text-xs" style="color:#aaa;margin-bottom:6px;font-weight:600;">Endpoint Info</p>' +
+                '<div class="flex items-center gap-1 mb-1">' +
+                '<span class="text-xs darkblue" style="min-width:80px;">Endpoint:</span>' +
+                '<code class="text-xs" style="color:#ececec;word-break:break-all;">POST ' + endpointSimple + '</code>' +
+                '<button type="button" onclick="copyTextReplit(\'' + endpointSimple + '\')" class="text-xs px-1 py-0.5 rounded" style="border:1px solid #00a896;color:#00a896;background:transparent;cursor:pointer;font-size:10px;">Copy</button>' +
+                '</div>' +
+                '<div class="flex items-center gap-1 mb-1">' +
+                '<span class="text-xs darkblue" style="min-width:80px;">OpenAI:</span>' +
+                '<code class="text-xs" style="color:#ececec;word-break:break-all;">POST ' + endpointOpenai + '</code>' +
+                '<button type="button" onclick="copyTextReplit(\'' + endpointOpenai + '\')" class="text-xs px-1 py-0.5 rounded" style="border:1px solid #00a896;color:#00a896;background:transparent;cursor:pointer;font-size:10px;">Copy</button>' +
+                '</div>' +
+                '<div class="flex items-center gap-1 mb-1">' +
+                '<span class="text-xs darkblue" style="min-width:80px;">Provider:</span>' +
+                '<code class="text-xs" style="color:#ececec;">' + k.provider + '</code>' +
+                '</div>' +
+                '<div class="flex items-center gap-1 mb-2">' +
+                '<span class="text-xs darkblue" style="min-width:80px;">Model:</span>' +
+                '<code class="text-xs" style="color:#ececec;">' + (k.model || '(default)') + '</code>' +
+                '</div>' +
+                '<p class="text-xs" style="color:#666;margin-bottom:3px;font-weight:600;">Contoh cURL:</p>' +
+                '<pre class="text-xs" style="color:#aaa;background:#0d1a1d;padding:6px 8px;border-radius:4px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;margin:0;">' + curlExample + '</pre>' +
+                '<button type="button" onclick="copyTextReplit(\'' + curlExample.replace(/'/g, "\\'").replace(/\n/g, "\\n") + '\')" class="text-xs px-2 py-0.5 rounded mt-1" style="border:1px solid #00a896;color:#00a896;background:transparent;cursor:pointer;">Copy cURL</button>' +
+                '</div>' +
+                '<p class="text-xs darkblue mt-1">Created: ' + date + ' | Uses: ' + k.usage_count + ' | ' + status + '</p>' +
+                '</div>' +
+                '<div class="flex gap-2" style="align-self:flex-start;">' +
+                '<button type="button" class="text-white outline-none inter rounded-lg text-xs px-3 py-1 hover:opacity-95" style="background:#6c757d;" onclick="toggleApiKey(\'' + k.id + '\',' + !k.is_active + ')">' + (k.is_active ? 'Disable' : 'Enable') + '</button>' +
+                '<button type="button" class="text-white outline-none inter rounded-lg text-xs px-3 py-1 hover:opacity-95" style="background:#dc3545;" onclick="deleteApiKey(\'' + k.id + '\')">Delete</button>' +
+                '</div></div>';
+            container.appendChild(div);
+        });
+    })
+    .catch(function() {});
+}
+
+function toggleApiKey(id, active) {
+    fetch('/api/apikeys/' + id + '/toggle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({is_active: active})
+    }).then(function() { loadApiKeys(); });
+}
+
+function deleteApiKey(id) {
+    if (!confirm('Hapus API key ini?')) return;
+    fetch('/api/apikeys/' + id, {method: 'DELETE'})
+    .then(function() { loadApiKeys(); });
+}
+
+document.addEventListener('DOMContentLoaded', initApiKeys);
+</script>
+</html>
+<!-- Path: src/templates/settings.html -->

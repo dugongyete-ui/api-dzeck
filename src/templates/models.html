@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon(Nicoladipa).png') }}" type="image/x-icon">
+    <title>Models - Api Dzeck Ai</title>
+    <style>
+        * { 
+            box-sizing: border-box; 
+            font-family: 'Inter', sans-serif; 
+        }
+        
+        body { 
+            margin: 0; 
+            padding: 0; 
+            min-height: 100vh; 
+            background: #212121; 
+            color: #ececec; 
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        * { scrollbar-width: thin; scrollbar-color: #444 transparent; }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 16px; 
+        }
+        
+        .header-bar { 
+            display: flex; 
+            align-items: center; 
+            padding: 10px 16px; 
+            gap: 10px; 
+            border-bottom: 1px solid #2a2a2a; 
+            background: #171717;
+            flex-wrap: wrap;
+        }
+        
+        .header-bar img { 
+            width: 36px; 
+            height: 36px; 
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        .brand-name { 
+            display: flex; 
+            align-items: baseline; 
+            gap: 0; 
+            flex-shrink: 0; 
+        }
+
+        .brand-name .brand-api { 
+            font-family: 'Space Grotesk', sans-serif; 
+            font-size: 11px; 
+            font-weight: 500; 
+            color: #00a896; 
+            letter-spacing: 1.5px; 
+            text-transform: uppercase; 
+            margin-right: 4px; 
+        }
+
+        .brand-name .brand-dzeck { 
+            font-family: 'Space Grotesk', sans-serif; 
+            font-size: 22px; 
+            font-weight: 700; 
+            background: linear-gradient(135deg, #00a896, #00c9b7); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            letter-spacing: -0.5px; 
+        }
+
+        .brand-name .brand-ai { 
+            font-family: 'Space Grotesk', sans-serif; 
+            font-size: 22px; 
+            font-weight: 600; 
+            color: #00a896; 
+            margin-left: 3px; 
+        }
+        
+        .nav-links { 
+            margin-left: auto; 
+            display: flex; 
+            gap: 6px; 
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a { 
+            color: #aaa; 
+            text-decoration: none; 
+            font-size: 13px; 
+            font-weight: 500; 
+            padding: 4px 8px; 
+            border-radius: 6px; 
+            transition: all 0.2s; 
+            white-space: nowrap;
+        }
+        
+        .nav-links a:hover { 
+            background: rgba(255,255,255,0.08); 
+            color: #ececec;
+        }
+        
+        .current-info { 
+            background: #2b2b2b; 
+            border-radius: 12px; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border: 1px solid #333; 
+        }
+        
+        .current-info h2 { 
+            color: #ececec; 
+            font-size: 18px; 
+            margin: 0 0 16px 0; 
+        }
+        
+        .model-info-display { 
+            display: flex; 
+            gap: 12px; 
+            align-items: center; 
+            flex-wrap: wrap; 
+        }
+        
+        .model-name { 
+            font-size: 16px; 
+            font-weight: 600; 
+            color: #00a896; 
+        }
+        
+        .category-badge { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 6px 12px; 
+            border-radius: 20px; 
+            font-size: 13px; 
+            font-weight: 500; 
+            color: white; 
+        }
+        
+        .section-title { 
+            font-size: 20px; 
+            font-weight: 700; 
+            color: #ececec; 
+            margin: 24px 0 16px 0; 
+        }
+        
+        .categories-grid { 
+            display: grid; 
+            gap: 24px; 
+            margin-bottom: 20px; 
+        }
+        
+        .category-section { 
+            background: #2b2b2b; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            border: 1px solid #333; 
+        }
+        
+        .category-header { 
+            padding: 16px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            color: white; 
+            font-weight: 600; 
+            font-size: 16px; 
+        }
+        
+        .category-icon { 
+            font-size: 20px; 
+            display: flex; 
+            align-items: center; 
+        }
+        
+        .category-desc { 
+            font-size: 13px; 
+            font-weight: 400; 
+            opacity: 0.9; 
+            margin-left: auto; 
+        }
+        
+        .models-container { 
+            padding: 16px 20px; 
+            display: grid; 
+            gap: 12px; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+        }
+        
+        .model-card { 
+            background: #2f2f2f; 
+            border: 1px solid #444; 
+            border-radius: 8px; 
+            padding: 14px; 
+            transition: all 0.2s; 
+            cursor: pointer; 
+        }
+        
+        .model-card:hover { 
+            border-color: #00a896; 
+            background: #353535; 
+        }
+        
+        .model-card.active { 
+            background: #00a896; 
+            border-color: #00a896; 
+            color: white; 
+        }
+        
+        .model-card.active .model-title,
+        .model-card.active .model-provider,
+        .model-card.active .model-desc { 
+            color: white; 
+        }
+        
+        .model-title { 
+            font-weight: 600; 
+            font-size: 14px; 
+            color: #ececec; 
+            margin-bottom: 4px; 
+        }
+        
+        .model-provider { 
+            font-size: 12px; 
+            color: #888; 
+            margin-bottom: 8px; 
+        }
+        
+        .model-card.active .model-provider { 
+            color: rgba(255,255,255,0.8); 
+        }
+        
+        .model-desc { 
+            font-size: 13px; 
+            color: #d1d1d1; 
+            margin-bottom: 10px; 
+            line-height: 1.4; 
+        }
+        
+        .model-tags { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 6px; 
+        }
+        
+        .tag { 
+            background: rgba(0,168,150,0.15); 
+            color: #00a896; 
+            padding: 3px 8px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            font-weight: 500; 
+        }
+        
+        .model-card.active .tag { 
+            background: rgba(255,255,255,0.2); 
+            color: white; 
+        }
+        
+        .active-indicator { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 4px; 
+            background: #00a896; 
+            color: white; 
+            padding: 2px 6px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            font-weight: 600; 
+        }
+        
+        .model-card.active .active-indicator { 
+            background: rgba(255,255,255,0.3); 
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 12px;
+            }
+            
+            .header-bar {
+                padding: 8px 10px;
+                gap: 6px;
+            }
+            
+            .header-bar img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .brand-name .brand-dzeck, .brand-name .brand-ai {
+                font-size: 18px;
+            }
+
+            .brand-name .brand-api {
+                font-size: 9px;
+            }
+            
+            .nav-links {
+                gap: 2px;
+            }
+            
+            .nav-links a {
+                font-size: 11px;
+                padding: 3px 5px;
+            }
+            
+            .current-info {
+                padding: 14px;
+                margin: 12px 0;
+            }
+            
+            .current-info h2 {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .model-info-display {
+                gap: 8px;
+            }
+            
+            .model-name {
+                font-size: 14px;
+            }
+            
+            .category-badge {
+                padding: 4px 10px;
+                font-size: 12px;
+            }
+            
+            .section-title {
+                font-size: 18px;
+                margin: 16px 0 12px 0;
+            }
+            
+            .categories-grid {
+                gap: 16px;
+            }
+            
+            .category-header {
+                padding: 12px 14px;
+                font-size: 14px;
+                gap: 8px;
+            }
+            
+            .category-icon {
+                font-size: 18px;
+            }
+            
+            .category-desc {
+                font-size: 12px;
+                display: none;
+            }
+            
+            .models-container {
+                padding: 12px 14px;
+                gap: 10px;
+                grid-template-columns: 1fr;
+            }
+            
+            .model-card {
+                padding: 12px;
+            }
+            
+            .model-title {
+                font-size: 13px;
+                margin-bottom: 3px;
+            }
+            
+            .model-provider {
+                font-size: 11px;
+                margin-bottom: 6px;
+            }
+            
+            .model-desc {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+            
+            .tag {
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 8px;
+            }
+            
+            .header-bar {
+                flex-wrap: wrap;
+                padding: 6px 8px;
+            }
+            
+            .header-bar .brand-name {
+                width: 100%;
+                flex-basis: 100%;
+            }
+            
+            .current-info {
+                padding: 12px;
+            }
+            
+            .current-info h2 {
+                font-size: 14px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <img src="{{ url_for('static', filename='img/favicon(Nicoladipa).png') }}" alt="Logo">
+            <div class="brand-name">
+                <span class="brand-api">API</span>
+                <span class="brand-dzeck">Dzeck</span>
+                <span class="brand-ai">Ai</span>
+            </div>
+            <div class="nav-links">
+                <a href="/">Chat</a>
+                {% if gui_enabled %}
+                <a href="/settings">Settings</a>
+                {% endif %}
+                <a href="/test-api">Test API</a>
+            </div>
+        </div>
+
+        <div class="current-info">
+            <h2>Pengaturan Model Aktif</h2>
+            <div class="model-info-display">
+                {% set current_model_info = model_capabilities.get(current_model, {}) %}
+                {% set current_category = current_model_info.get('category', 'general') %}
+                {% set current_cat_info = category_info.get(current_category, {}) %}
+                
+                <div class="model-name">{{ current_model }}</div>
+                
+                {% if current_cat_info %}
+                <span class="category-badge" style="background-color: {{ current_cat_info.get('color', '#00a896') }}">
+                    <span>{{ {
+                        'search': '🔍',
+                        'thinking': '💡',
+                        'research': '🔬',
+                        'labs': '🧪',
+                        'advanced': '🚀',
+                        'general': '🧠',
+                        'fast': '⚡'
+                    }.get(current_category, '•') }}</span>
+                    <span>{{ current_cat_info.get('label', 'General') }}</span>
+                </span>
+                {% endif %}
+                
+                {% if current_model_info.get('desc') %}
+                <div style="font-size: 13px; color: #888; margin-left: auto;">{{ current_model_info.get('desc') }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <h3 class="section-title">Semua Model Berdasarkan Kategori</h3>
+        
+        <div class="categories-grid">
+            {% set categories_order = ['search', 'thinking', 'research', 'labs', 'advanced', 'general', 'fast'] %}
+            {% set models_by_category = {} %}
+            
+            {# Build models_by_category dictionary #}
+            {% for model_name, capabilities in model_capabilities.items() %}
+                {% set cat = capabilities.get('category', 'general') %}
+                {% if cat not in models_by_category %}
+                    {% set _ = models_by_category.update({cat: []}) %}
+                {% endif %}
+                {% set _ = models_by_category[cat].append((model_name, capabilities)) %}
+            {% endfor %}
+            
+            {# Display categories in order #}
+            {% for category in categories_order %}
+                {% if category in models_by_category and models_by_category[category] %}
+                    {% set cat_info = category_info.get(category, {}) %}
+                    <div class="category-section">
+                        <div class="category-header" style="background-color: {{ cat_info.get('color', '#00a896') }}">
+                            <span class="category-icon">{{ {
+                                'search': '🔍',
+                                'thinking': '💡',
+                                'research': '🔬',
+                                'labs': '🧪',
+                                'advanced': '🚀',
+                                'general': '🧠',
+                                'fast': '⚡'
+                            }.get(category, '•') }}</span>
+                            <span>{{ cat_info.get('label', category.title()) }}</span>
+                            <span class="category-desc">{{ cat_info.get('desc', '') }}</span>
+                        </div>
+                        
+                        <div class="models-container">
+                            {% for model_name, capabilities in models_by_category[category] | sort(attribute='0') %}
+                                {% set is_active = (model_name == current_model) %}
+                                <div class="model-card {{ 'active' if is_active else '' }}" data-model="{{ model_name }}">
+                                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+                                        <div style="flex: 1;">
+                                            <div class="model-title">{{ capabilities.get('name', model_name) }}</div>
+                                            <div class="model-provider">
+                                                {# Find provider for this model - first match #}
+                                                {% set provider_found = false %}
+                                                {% for provider, models in models_by_provider.items() %}
+                                                    {% if not provider_found and model_name in models %}
+                                                        {{ provider }}
+                                                        {% set provider_found = true %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% if is_active %}
+                                        <span class="active-indicator">✓ Active</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="model-desc">{{ capabilities.get('desc', '') }}</div>
+                                    
+                                    {% if capabilities.get('tags') %}
+                                    <div class="model-tags">
+                                        {% for tag in capabilities.get('tags', []) %}
+                                        <span class="tag">{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <script>
+        document.querySelectorAll('.model-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const model = this.getAttribute('data-model');
+                console.log('Selected model:', model);
+            });
+        });
+    </script>
+</body>
+</html>

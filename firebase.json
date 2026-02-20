@@ -1,0 +1,66 @@
+{
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "redirects": [
+      {
+        "source": "/api/chat",
+        "destination": "https://a62f4b42-e085-463d-936a-acd752cc23ee-00-jelgvzen34hg.spock.replit.dev/api/chat",
+        "type": 307
+      },
+      {
+        "source": "/v1/chat/completions",
+        "destination": "https://a62f4b42-e085-463d-936a-acd752cc23ee-00-jelgvzen34hg.spock.replit.dev/v1/chat/completions",
+        "type": 307
+      },
+      {
+        "source": "/stream",
+        "destination": "https://a62f4b42-e085-463d-936a-acd752cc23ee-00-jelgvzen34hg.spock.replit.dev/stream",
+        "type": 307
+      },
+      {
+        "source": "/health",
+        "destination": "https://a62f4b42-e085-463d-936a-acd752cc23ee-00-jelgvzen34hg.spock.replit.dev/health",
+        "type": 307
+      },
+      {
+        "source": "/ping",
+        "destination": "https://a62f4b42-e085-463d-936a-acd752cc23ee-00-jelgvzen34hg.spock.replit.dev/ping",
+        "type": 307
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/settings",
+        "destination": "/settings.html"
+      },
+      {
+        "source": "/models",
+        "destination": "/models.html"
+      },
+      {
+        "source": "/test-api",
+        "destination": "/test-api.html"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
+    ]
+  }
+}

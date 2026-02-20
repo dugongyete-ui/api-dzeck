@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="/static/img/favicon(Nicoladipa).png" type="image/x-icon">
+    <title>Models - Api Dzeck Ai</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { margin: 0; padding: 0; min-height: 100vh; background: #212121; color: #ececec; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        * { scrollbar-width: thin; scrollbar-color: #444 transparent; }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 16px; }
+        .header-bar { display: flex; align-items: center; padding: 10px 16px; gap: 12px; border-bottom: 1px solid #2a2a2a; background: #171717; flex-wrap: wrap; }
+        .header-bar img { width: 40px; height: 40px; }
+        .brand-name { display: flex; align-items: baseline; gap: 0; flex-shrink: 0; }
+        .brand-name .brand-api { font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 500; color: #00a896; letter-spacing: 1.5px; text-transform: uppercase; margin-right: 4px; }
+        .brand-name .brand-dzeck { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; background: linear-gradient(135deg, #00a896, #00c9b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.5px; }
+        .brand-name .brand-ai { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600; color: #00a896; margin-left: 3px; }
+        .nav-links { margin-left: auto; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .nav-links a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 8px; transition: all 0.2s; white-space: nowrap; cursor: pointer; }
+        .nav-links a:hover { background: rgba(255,255,255,0.08); }
+        .current-info { background: #2b2b2b; border-radius: 12px; padding: 20px; margin: 20px 0; border: 1px solid #333; }
+        .current-info h2 { color: #ececec; font-size: 18px; margin: 0 0 12px 0; font-family: 'Space Grotesk', sans-serif; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { font-weight: 600; color: #d1d1d1; }
+        .info-value { color: #00a896; font-weight: 500; }
+        .provider-section { margin: 20px 0; }
+        .provider-card { background: #2b2b2b; border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; border: 1px solid #333; }
+        .provider-name { font-size: 16px; font-weight: 600; color: #ececec; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .provider-name .arrow { transition: transform 0.2s; font-size: 12px; }
+        .provider-name .arrow.open { transform: rotate(90deg); }
+        .model-list { display: none; flex-wrap: wrap; gap: 8px; padding-top: 8px; }
+        .model-list.open { display: flex; }
+        .model-tag { padding: 4px 12px; background: rgba(0,168,150,0.15); border-radius: 16px; font-size: 13px; color: #00a896; border: 1px solid #444; }
+        .model-tag.active { background: #00a896; color: white; }
+        .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; color: #ececec; margin: 24px 0 12px 0; }
+        .loading { text-align: center; padding: 40px; color: #00a896; font-size: 14px; }
+        .error-msg { text-align: center; padding: 20px; color: #dc3545; background: #f8d7da; border-radius: 10px; margin: 20px 0; }
+        .total-badge { font-size: 14px; color: #00a896; font-weight: 500; margin-left: 8px; }
+        @media (max-width: 640px) {
+            .brand-name .brand-dzeck, .brand-name .brand-ai { font-size: 18px; }
+            .nav-links a { font-size: 12px; padding: 4px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <img src="/static/img/favicon(Nicoladipa).png" alt="Logo">
+            <div class="brand-name">
+                <span class="brand-api">API</span>
+                <span class="brand-dzeck">Dzeck</span>
+                <span class="brand-ai">Ai</span>
+            </div>
+            <div class="nav-links">
+                <a href="/">Chat</a>
+                <a href="/settings.html">Settings</a>
+                <a href="/test-api.html">Test API</a>
+                <span id="user-display" style="color:#00a896;font-weight:500;font-size:13px;display:none;"></span>
+                <a id="logout-link" onclick="doLogout()" style="color:#ef4444;display:none;">Logout</a>
+            </div>
+        </div>
+
+        <div class="current-info">
+            <h2>Pengaturan Model Aktif</h2>
+            <div class="info-row">
+                <span class="info-label">Provider:</span>
+                <span class="info-value" id="current-provider">Loading...</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Model:</span>
+                <span class="info-value" id="current-model">Loading...</span>
+            </div>
+        </div>
+
+        <h3 class="section-title">Semua Provider & Model <span class="total-badge" id="total-models"></span></h3>
+        <div id="providers-container">
+            <div class="loading">Memuat data model...</div>
+        </div>
+    </div>
+
+    <script src="/api-config.js"></script>
+    <script>
+        function toggleModels(provider) {
+            var list = document.getElementById('models-' + CSS.escape(provider));
+            var arrow = document.getElementById('arrow-' + CSS.escape(provider));
+            if (list) list.classList.toggle('open');
+            if (arrow) arrow.classList.toggle('open');
+        }
+
+        async function checkAuth() {
+            try {
+                var res = await apiFetch('/api/auth/check');
+                var data = await res.json();
+                if (data.logged_in) {
+                    document.getElementById('user-display').style.display = '';
+                    document.getElementById('user-display').textContent = data.username;
+                    document.getElementById('logout-link').style.display = '';
+                }
+            } catch(e) {}
+        }
+
+        async function doLogout() {
+            try { await apiFetch('/api/auth/logout'); } catch(e) {}
+            location.reload();
+        }
+
+        async function loadModels() {
+            var container = document.getElementById('providers-container');
+            try {
+                var res = await apiFetch('/models?format=json');
+                var modelsData = await res.json();
+
+                var settingsRes = await apiFetch('/api/chat-settings');
+                var settings = await settingsRes.json();
+
+                document.getElementById('current-provider').textContent = settings.provider || '-';
+                document.getElementById('current-model').textContent = settings.model || '-';
+
+                var totalModels = 0;
+                var html = '';
+
+                if (modelsData && typeof modelsData === 'object') {
+                    var providers = Object.keys(modelsData);
+                    providers.forEach(function(provider) {
+                        var models = modelsData[provider];
+                        if (!Array.isArray(models)) models = [];
+                        totalModels += models.length;
+
+                        var safeId = provider.replace(/[^a-zA-Z0-9]/g, '_');
+                        html += '<div class="provider-card">';
+                        html += '<div class="provider-name" onclick="toggleModels(\'' + safeId + '\')">';
+                        html += '<span class="arrow" id="arrow-' + safeId + '">&#9654;</span> ';
+                        html += provider;
+                        html += ' <span style="font-weight:400;font-size:13px;color:#888;">(' + models.length + ' model' + (models.length > 1 ? 's' : '') + ')</span>';
+                        html += '</div>';
+                        html += '<div class="model-list" id="models-' + safeId + '">';
+                        models.forEach(function(model) {
+                            var isActive = (model === settings.model && provider === settings.provider);
+                            html += '<span class="model-tag' + (isActive ? ' active' : '') + '">' + model + '</span>';
+                        });
+                        html += '</div></div>';
+                    });
+                }
+
+                document.getElementById('total-models').textContent = '(' + totalModels + ' total)';
+                container.innerHTML = html || '<div class="error-msg">Tidak ada model tersedia</div>';
+            } catch(e) {
+                container.innerHTML = '<div class="error-msg">Gagal memuat data model. Pastikan backend berjalan.<br><small>' + e.message + '</small></div>';
+            }
+        }
+
+        function toggleModels(id) {
+            var list = document.getElementById('models-' + id);
+            var arrow = document.getElementById('arrow-' + id);
+            if (list) list.classList.toggle('open');
+            if (arrow) arrow.classList.toggle('open');
+        }
+
+        checkAuth();
+        loadModels();
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+Flask[async]
+Werkzeug>=3.1.4
+g4f
+gunicorn
+aiohttp
+aiohttp_socks
+curl_cffi
+nodriver
+python-multipart
+uvicorn
+fastapi
+platformdirs
+trio
+eventlet
+requests
+flask-cors
+psycopg2-binary

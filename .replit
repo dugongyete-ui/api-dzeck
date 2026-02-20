@@ -1,0 +1,53 @@
+modules = ["nodejs-20", "python-3.11", "postgresql-16"]
+
+[nix]
+channel = "stable-25_05"
+packages = ["coreutils", "firebase-tools", "iana-etc", "sqlite"]
+
+[agent]
+expertMode = true
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "FreeGPT4 Server"
+
+[[workflows.workflow]]
+name = "FreeGPT4 Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/workspace/src && python FreeGPT4_Server.py --port 5000 --enable-gui --password admin12345 --enable-virtual-users --enable-history"
+waitForPort = 5000
+
+[[ports]]
+localPort = 1337
+externalPort = 3001
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "cloudrun"
+run = ["python", "src/FreeGPT4_Server.py", "--port", "5000", "--enable-gui", "--password", "admin12345", "--enable-virtual-users", "--enable-history"]
+build = ["bash", "-c", "pip install gunicorn"]
+publicDir = "public"
+
+[userenv]
+
+[userenv.shared]
+ENABLE_GUI = "true"
+ENABLE_VIRTUAL_USERS = "true"
+ADMIN_PASSWORD = "admin12345"
