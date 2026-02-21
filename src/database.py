@@ -338,6 +338,7 @@ class DatabaseManager:
                 ))
                 conn.commit()
                 logger.info(f"User '{username}' created successfully")
+                self.export_data_backup()
                 return token
         except psycopg2.IntegrityError as e:
             if "username" in str(e):
@@ -468,6 +469,7 @@ class DatabaseManager:
                 cursor.execute("DELETE FROM personal WHERE username = %s", (username,))
                 conn.commit()
                 logger.info(f"User '{username}' deleted successfully")
+                self.export_data_backup()
         except Exception as e:
             logger.error(f"Failed to delete user '{username}': {e}")
             raise DatabaseError(f"Failed to delete user: {e}")
@@ -646,7 +648,9 @@ class DatabaseManager:
                     (key_id, api_key, provider, model, label, created_by, now, base_url)
                 )
                 conn.commit()
-                return {"id": key_id, "api_key": api_key, "provider": provider, "model": model, "label": label, "created_by": created_by, "created_at": now, "usage_count": 0, "is_active": True, "base_url": base_url}
+                result = {"id": key_id, "api_key": api_key, "provider": provider, "model": model, "label": label, "created_by": created_by, "created_at": now, "usage_count": 0, "is_active": True, "base_url": base_url}
+                self.export_data_backup()
+                return result
         except Exception as e:
             logger.error(f"Failed to create API key: {e}")
             raise DatabaseError(f"Failed to create API key: {e}")
@@ -690,6 +694,7 @@ class DatabaseManager:
             with self.get_connection() as (conn, cursor):
                 cursor.execute("DELETE FROM api_keys WHERE id = %s", (key_id,))
                 conn.commit()
+                self.export_data_backup()
         except Exception as e:
             logger.error(f"Failed to delete API key: {e}")
             raise DatabaseError(f"Failed to delete API key: {e}")
@@ -703,4 +708,77 @@ class DatabaseManager:
             logger.error(f"Failed to toggle API key: {e}")
             raise DatabaseError(f"Failed to toggle API key: {e}")
 
+    def export_data_backup(self):
+        backup_path = Path(__file__).parent / "data" / "db_backup.json"
+        try:
+            backup_data = {
+                "users": [],
+                "api_keys": [],
+                "exported_at": time.time()
+            }
+            with self.get_connection() as (conn, cursor):
+                cursor.execute("SELECT token, provider, model, system_prompt, message_history, username, password, chat_history FROM personal")
+                for row in cursor.fetchall():
+                    backup_data["users"].append(dict(row))
+
+                cursor.execute("SELECT id, api_key, provider, model, label, created_by, created_at, last_used_at, usage_count, is_active, base_url FROM api_keys")
+                for row in cursor.fetchall():
+                    backup_data["api_keys"].append(dict(row))
+
+            backup_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(backup_path, 'w') as f:
+                json.dump(backup_data, f, indent=2, default=str)
+            logger.info(f"Database backup exported to {backup_path} ({len(backup_data['users'])} users, {len(backup_data['api_keys'])} API keys)")
+        except Exception as e:
+            logger.warning(f"Failed to export database backup: {e}")
+
+    def import_data_backup(self):
+        backup_path = Path(__file__).parent / "data" / "db_backup.json"
+        if not backup_path.exists():
+            logger.info("No database backup file found, skipping import")
+            return
+
+        try:
+            with open(backup_path, 'r') as f:
+                backup_data = json.load(f)
+
+            imported_users = 0
+            imported_keys = 0
+
+            with self.get_connection() as (conn, cursor):
+                for user in backup_data.get("users", []):
+                    cursor.execute("SELECT COUNT(*) AS cnt FROM personal WHERE username = %s", (user["username"],))
+                    if cursor.fetchone()["cnt"] == 0:
+                        cursor.execute(
+                            """INSERT INTO personal (token, provider, model, system_prompt, message_history, username, password, chat_history)
+                               VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                            (user["token"], user.get("provider", "PollinationsAI"), user.get("model", "openai"),
+                             user.get("system_prompt", ""), user.get("message_history", False),
+                             user["username"], user["password"], user.get("chat_history", ""))
+                        )
+                        imported_users += 1
+
+                for key in backup_data.get("api_keys", []):
+                    cursor.execute("SELECT COUNT(*) AS cnt FROM api_keys WHERE api_key = %s", (key["api_key"],))
+                    if cursor.fetchone()["cnt"] == 0:
+                        cursor.execute(
+                            """INSERT INTO api_keys (id, api_key, provider, model, label, created_by, created_at, last_used_at, usage_count, is_active, base_url)
+                               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                            (key["id"], key["api_key"], key.get("provider", ""), key.get("model", ""),
+                             key.get("label", ""), key.get("created_by", "admin"), key.get("created_at", time.time()),
+                             key.get("last_used_at"), key.get("usage_count", 0), key.get("is_active", True),
+                             key.get("base_url", ""))
+                        )
+                        imported_keys += 1
+
+                conn.commit()
+
+            if imported_users > 0 or imported_keys > 0:
+                logger.info(f"Database backup restored: {imported_users} users, {imported_keys} API keys imported")
+            else:
+                logger.info("Database backup checked: all data already exists")
+        except Exception as e:
+            logger.warning(f"Failed to import database backup: {e}")
+
 db_manager = DatabaseManager()
+db_manager.import_data_backup()

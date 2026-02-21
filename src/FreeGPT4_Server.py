@@ -1604,6 +1604,31 @@ def health_check():
 def ping():
     return "pong", 200
 
+@app.route("/api/backup", methods=["POST"])
+def api_backup():
+    username = session.get('logged_in_user')
+    is_admin = session.get('is_admin', False)
+    if not username or not is_admin:
+        return jsonify({"error": "Admin only"}), 403
+    db_manager.export_data_backup()
+    return jsonify({"success": True, "message": "Backup exported successfully"})
+
+@app.route("/api/backup/export", methods=["GET"])
+def api_backup_export():
+    username = session.get('logged_in_user')
+    is_admin = session.get('is_admin', False)
+    if not username or not is_admin:
+        return jsonify({"error": "Admin only"}), 403
+    backup_path = Path(__file__).parent / "data" / "db_backup.json"
+    if not backup_path.exists():
+        db_manager.export_data_backup()
+    if backup_path.exists():
+        import json as json_mod
+        with open(backup_path, 'r') as f:
+            data = json_mod.load(f)
+        return jsonify(data)
+    return jsonify({"error": "No backup available"}), 404
+
 @app.route("/api/apikeys", methods=["GET"])
 def list_api_keys():
     username = session.get('logged_in_user')
