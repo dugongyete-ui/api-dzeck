@@ -60,11 +60,19 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = 86400 * 7
 app.config['SESSION_COOKIE_PATH'] = '/'
 
+PRODUCTION_URL = "https://api-dzeck--lizqz5hk.replit.app"
+
+def _get_production_base_url():
+    deploy_url = os.environ.get('REPLIT_DEPLOYMENT_URL', '')
+    if deploy_url:
+        return deploy_url.rstrip('/')
+    return PRODUCTION_URL
+
 def _get_allowed_origins():
     origins = [
         "https://api-dzeck.web.app",
         "https://api-dzeck.firebaseapp.com",
-        "https://api-dzeck--lizqz5hk.replit.app",
+        PRODUCTION_URL,
         "http://localhost:5000",
     ]
     dev_domain = os.environ.get('REPLIT_DEV_DOMAIN', '')
@@ -1510,7 +1518,7 @@ def test_api_page():
         return redirect("/login?next=/test-api", code=302)
     
     providers_with_models = ai_service.get_all_providers_with_models()
-    base_url = request.host_url.rstrip('/')
+    base_url = _get_production_base_url()
     
     user_token = ""
     if username == "admin":
@@ -1602,11 +1610,12 @@ def list_api_keys():
         keys = db_manager.get_api_keys()
     else:
         keys = db_manager.get_api_keys(created_by=username)
-    replit_domain = os.environ.get('REPLIT_DEV_DOMAIN', '') or os.environ.get('REPLIT_DOMAINS', '')
-    default_base_url = f"https://{replit_domain}" if replit_domain else request.host_url.rstrip('/')
+    default_base_url = _get_production_base_url()
     safe_keys = []
     for k in keys:
         key_base_url = k.get("base_url", "") or default_base_url
+        if "kirk.replit.dev" in key_base_url or "replit.dev" in key_base_url:
+            key_base_url = default_base_url
         safe_keys.append({
             "id": k["id"],
             "api_key": k["api_key"],
@@ -1646,8 +1655,7 @@ def generate_api_key():
     base_url_choice = data.get("base_url", "")
     if not provider:
         return jsonify({"error": "Provider is required"}), 400
-    replit_domain = os.environ.get('REPLIT_DEV_DOMAIN', '') or os.environ.get('REPLIT_DOMAINS', '')
-    default_base_url = f"https://{replit_domain}" if replit_domain else request.host_url.rstrip('/')
+    default_base_url = _get_production_base_url()
     firebase_url = "https://api-dzeck.web.app"
     if base_url_choice == "firebase":
         selected_base_url = firebase_url
@@ -1694,23 +1702,57 @@ def toggle_api_key(key_id):
 @app.route("/v1/chat/completions", methods=["POST"])
 def openai_compatible_endpoint():
     import asyncio
+    import time as _t
     data = request.get_json(silent=True) or {}
     auth_header = request.headers.get("Authorization", "")
     api_key = None
     if auth_header.startswith("Bearer "):
         api_key = auth_header[7:]
     if not api_key:
-        return jsonify({"error": {"message": "Missing API key", "type": "invalid_request_error"}}), 401
+        return jsonify({
+            "error": {
+                "message": "You didn't provide an API key. You need to provide your API key in an Authorization header using Bearer auth (i.e. Authorization: Bearer YOUR_KEY).",
+                "type": "invalid_request_error",
+                "param": None,
+                "code": "missing_api_key"
+            }
+        }), 401
     key_data = db_manager.get_api_key_by_key(api_key)
     if not key_data:
-        return jsonify({"error": {"message": "Invalid API key", "type": "invalid_request_error"}}), 401
+        return jsonify({
+            "error": {
+                "message": "Incorrect API key provided. You can find your API key in the settings page.",
+                "type": "invalid_request_error",
+                "param": None,
+                "code": "invalid_api_key"
+            }
+        }), 401
+    if not key_data.get("is_active", True):
+        return jsonify({
+            "error": {
+                "message": "This API key has been disabled. Please enable it in the settings page or generate a new one.",
+                "type": "invalid_request_error",
+                "param": None,
+                "code": "api_key_disabled"
+            }
+        }), 403
     db_manager.increment_api_key_usage(api_key)
     messages = data.get("messages", [])
-    model = data.get("model") or key_data.get("model") or "openai"
+    model_requested = data.get("model") or key_data.get("model") or "auto"
     provider = key_data.get("provider", "Auto")
     if not messages:
-        return jsonify({"error": {"message": "Messages are required", "type": "invalid_request_error"}}), 400
+        return jsonify({
+            "error": {
+                "message": "Messages are required. Please provide at least one message in the 'messages' array.",
+                "type": "invalid_request_error",
+                "param": "messages",
+                "code": "missing_messages"
+            }
+        }), 400
     last_msg = messages[-1].get("content", "") if messages else ""
+    prompt_tokens = sum(len(m.get("content", "").split()) for m in messages) * 2
+    created_ts = int(_t.time())
+    completion_id = f"chatcmpl-{generate_uuid().replace('-', '')[:29]}"
     loop = None
     try:
         loop = asyncio.new_event_loop()
@@ -1720,26 +1762,45 @@ def openai_compatible_endpoint():
                 message=last_msg,
                 username=key_data.get("created_by", "admin"),
                 provider=provider,
-                model=model,
+                model=model_requested,
                 use_history=False,
                 remove_sources=True,
                 use_proxies=False
             )
         )
+        completion_tokens = len(response_text.split()) * 2
+        total_tokens = prompt_tokens + completion_tokens
         return jsonify({
-            "id": f"chatcmpl-{generate_uuid()[:8]}",
+            "id": completion_id,
             "object": "chat.completion",
-            "created": int(__import__('time').time()),
-            "model": model,
+            "created": created_ts,
+            "model": model_requested,
+            "system_fingerprint": f"fp_{generate_uuid()[:12].replace('-', '')}",
             "choices": [{
                 "index": 0,
-                "message": {"role": "assistant", "content": response_text},
+                "message": {
+                    "role": "assistant",
+                    "content": response_text
+                },
+                "logprobs": None,
                 "finish_reason": "stop"
             }],
-            "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+            "usage": {
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": total_tokens
+            },
+            "service_tier": "default"
         })
     except Exception as e:
-        return jsonify({"error": {"message": str(e), "type": "server_error"}}), 500
+        return jsonify({
+            "error": {
+                "message": str(e),
+                "type": "server_error",
+                "param": None,
+                "code": "internal_error"
+            }
+        }), 500
     finally:
         if loop:
             loop.close()
