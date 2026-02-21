@@ -9,87 +9,87 @@
     "redirects": [
       {
         "source": "/api/chat",
-        "destination": "https://project-p--keanun1.replit.app/api/chat",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/chat",
         "type": 307
       },
       {
         "source": "/v1/chat/completions",
-        "destination": "https://project-p--keanun1.replit.app/v1/chat/completions",
+        "destination": "https://api-gateway--ngatwhb.replit.app/v1/chat/completions",
         "type": 307
       },
       {
         "source": "/stream",
-        "destination": "https://project-p--keanun1.replit.app/stream",
+        "destination": "https://api-gateway--ngatwhb.replit.app/stream",
         "type": 307
       },
       {
         "source": "/health",
-        "destination": "https://project-p--keanun1.replit.app/health",
+        "destination": "https://api-gateway--ngatwhb.replit.app/health",
         "type": 307
       },
       {
         "source": "/ping",
-        "destination": "https://project-p--keanun1.replit.app/ping",
+        "destination": "https://api-gateway--ngatwhb.replit.app/ping",
         "type": 307
       },
       {
         "source": "/generatetoken",
-        "destination": "https://project-p--keanun1.replit.app/generatetoken",
+        "destination": "https://api-gateway--ngatwhb.replit.app/generatetoken",
         "type": 307
       },
       {
         "source": "/api/apikeys",
-        "destination": "https://project-p--keanun1.replit.app/api/apikeys",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/apikeys",
         "type": 307
       },
       {
         "source": "/api/apikeys/**",
-        "destination": "https://project-p--keanun1.replit.app/api/apikeys/:splat",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/apikeys/:splat",
         "type": 307
       },
       {
         "source": "/api/auth/**",
-        "destination": "https://project-p--keanun1.replit.app/api/auth/:splat",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/auth/:splat",
         "type": 307
       },
       {
         "source": "/api/chat-history",
-        "destination": "https://project-p--keanun1.replit.app/api/chat-history",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/chat-history",
         "type": 307
       },
       {
         "source": "/api/conversations",
-        "destination": "https://project-p--keanun1.replit.app/api/conversations",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/conversations",
         "type": 307
       },
       {
         "source": "/api/conversations/**",
-        "destination": "https://project-p--keanun1.replit.app/api/conversations/:splat",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/conversations/:splat",
         "type": 307
       },
       {
         "source": "/api/chat-settings",
-        "destination": "https://project-p--keanun1.replit.app/api/chat-settings",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/chat-settings",
         "type": 307
       },
       {
         "source": "/api/model-info",
-        "destination": "https://project-p--keanun1.replit.app/api/model-info",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/model-info",
         "type": 307
       },
       {
         "source": "/api/settings/**",
-        "destination": "https://project-p--keanun1.replit.app/api/settings/:splat",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/settings/:splat",
         "type": 307
       },
       {
         "source": "/api/providers-data",
-        "destination": "https://project-p--keanun1.replit.app/api/providers-data",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/providers-data",
         "type": 307
       },
       {
         "source": "/api/users/**",
-        "destination": "https://project-p--keanun1.replit.app/api/users/:splat",
+        "destination": "https://api-gateway--ngatwhb.replit.app/api/users/:splat",
         "type": 307
       }
     ],

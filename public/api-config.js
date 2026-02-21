@@ -1,4 +1,4 @@
-var API_BASE = 'https://project-p--keanun1.replit.app';
+var API_BASE = 'https://api-gateway--ngatwhb.replit.app';
 var PUBLIC_URL = 'https://api-dzeck.web.app';
 
 (function() {
@@ -19,7 +19,7 @@ var PUBLIC_URL = 'https://api-dzeck.web.app';
         return;
     }
 
-    API_BASE = 'https://project-p--keanun1.replit.app';
+    API_BASE = 'https://api-gateway--ngatwhb.replit.app';
 })();
 
 function setBackendUrl(url) {
