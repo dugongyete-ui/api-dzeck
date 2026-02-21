@@ -10,13 +10,12 @@ Api Dzeck Ai Web API provides a self-hosted, free HTTP interface to various Larg
 - No image generation features (removed - were blocked/non-functional)
 
 ## Recent Changes (2026-02-21)
-- **Migrated to new Replit project**: All URLs updated from `api-dzeck--lizqz5hk.replit.app` to `https://api-dzeck--mio7wxa.replit.app`.
-- **PRODUCTION_URL updated**: Server, deploy.sh, api-config.js, firebase.json all point to new domain.
-- **Firebase redirects expanded**: Added redirects for `/api/apikeys`, `/api/apikeys/**`, `/generatetoken`, `/api/auth/**`, `/api/conversations/**`, `/api/chat-history`, `/api/chat-settings`, `/api/model-info`, `/api/settings/**`, `/api/providers-data`, `/api/users/**`.
-- **deploy.sh improved**: Now does global URL replacement in firebase.json and also updates PRODUCTION_URL in server code.
+- **Migrated to new Replit project (2nd time)**: All URLs updated from `api-dzeck--mio7wxa.replit.app` to `https://project-p--cz8ihvdx.replit.app`.
+- **Fixed Firebase redirect paths**: Previously `/v1/chat/completions` was redirected to `/completions` (wrong). Now correctly redirects to `/v1/chat/completions`. Same fix for `/api/chat` -> was `/chat`, now correctly `/api/chat`.
+- **PRODUCTION_URL updated**: Server, deploy.sh, api-config.js, firebase.json all point to new domain `project-p--cz8ihvdx.replit.app`.
 - **Deploy config**: Set to autoscale deployment for production.
-- **Keep-alive improved**: Falls back to PRODUCTION_URL instead of localhost when no Replit env vars available.
 - **Database**: New PostgreSQL database (fresh). API keys from old project are lost - need to regenerate. User `dzeckyete` auto-created on startup.
+- **Firebase deployed**: Successfully deployed to https://api-dzeck.web.app with correct redirects.
 
 ## Changes (2026-02-20)
 - **Fixed Firebase API redirect**: firebase.json now has `redirects` for `/api/chat`, `/v1/chat/completions`, `/stream`, `/health`, `/ping` that 307-redirect to Replit backend. Previously, all paths were caught by the `**` rewrite to index.html, causing API calls to Firebase URL to return HTML instead of JSON.

@@ -9,12 +9,12 @@
     "redirects": [
       {
         "source": "/api/chat",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/chat",
+        "destination": "https://project-p--cz8ihvdx.replit.app/chat",
         "type": 307
       },
       {
         "source": "/v1/chat/completions",
-        "destination": "https://project-p--cz8ihvdx.replit.app/v1/chat/completions",
+        "destination": "https://project-p--cz8ihvdx.replit.app/completions",
         "type": 307
       },
       {
@@ -39,57 +39,57 @@
       },
       {
         "source": "/api/apikeys",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/apikeys",
+        "destination": "https://project-p--cz8ihvdx.replit.app/apikeys",
         "type": 307
       },
       {
         "source": "/api/apikeys/**",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/apikeys/:splat",
+        "destination": "https://project-p--cz8ihvdx.replit.app/:splat",
         "type": 307
       },
       {
         "source": "/api/auth/**",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/auth/:splat",
+        "destination": "https://project-p--cz8ihvdx.replit.app/:splat",
         "type": 307
       },
       {
         "source": "/api/chat-history",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/chat-history",
+        "destination": "https://project-p--cz8ihvdx.replit.app/chat-history",
         "type": 307
       },
       {
         "source": "/api/conversations",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/conversations",
+        "destination": "https://project-p--cz8ihvdx.replit.app/conversations",
         "type": 307
       },
       {
         "source": "/api/conversations/**",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/conversations/:splat",
+        "destination": "https://project-p--cz8ihvdx.replit.app/:splat",
         "type": 307
       },
       {
         "source": "/api/chat-settings",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/chat-settings",
+        "destination": "https://project-p--cz8ihvdx.replit.app/chat-settings",
         "type": 307
       },
       {
         "source": "/api/model-info",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/model-info",
+        "destination": "https://project-p--cz8ihvdx.replit.app/model-info",
         "type": 307
       },
       {
         "source": "/api/settings/**",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/settings/:splat",
+        "destination": "https://project-p--cz8ihvdx.replit.app/:splat",
         "type": 307
       },
       {
         "source": "/api/providers-data",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/providers-data",
+        "destination": "https://project-p--cz8ihvdx.replit.app/providers-data",
         "type": 307
       },
       {
         "source": "/api/users/**",
-        "destination": "https://project-p--cz8ihvdx.replit.app/api/users/:splat",
+        "destination": "https://project-p--cz8ihvdx.replit.app/:splat",
         "type": 307
       }
     ],
