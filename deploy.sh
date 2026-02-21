@@ -6,9 +6,6 @@ echo "Using deployment URL: $DEPLOY_URL"
 echo "Updating API_BASE to: $DEPLOY_URL"
 sed -i "s|API_BASE = '.*'|API_BASE = '${DEPLOY_URL}'|g" public/api-config.js
 
-echo "Updating firebase.json redirects to: $DEPLOY_URL"
-sed -i "s|\"destination\": \"https://[^\"]*/|\"destination\": \"${DEPLOY_URL}/|g" firebase.json
-
 echo "Updating PRODUCTION_URL in server..."
 sed -i "s|PRODUCTION_URL = \"https://[^\"]*\"|PRODUCTION_URL = \"${DEPLOY_URL}\"|g" src/FreeGPT4_Server.py
 

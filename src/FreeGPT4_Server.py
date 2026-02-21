@@ -1612,9 +1612,16 @@ def list_api_keys():
         keys = db_manager.get_api_keys(created_by=username)
     default_base_url = _get_production_base_url()
     safe_keys = []
+    firebase_url = "https://api-dzeck.web.app"
     for k in keys:
         key_base_url = k.get("base_url", "") or default_base_url
         if "kirk.replit.dev" in key_base_url or "replit.dev" in key_base_url:
+            key_base_url = default_base_url
+        if key_base_url and "replit.app" in key_base_url and key_base_url != default_base_url:
+            key_base_url = default_base_url
+        if key_base_url == firebase_url:
+            pass
+        elif key_base_url != default_base_url and key_base_url != firebase_url:
             key_base_url = default_base_url
         safe_keys.append({
             "id": k["id"],
