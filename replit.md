@@ -10,12 +10,13 @@ Api Dzeck Ai Web API provides a self-hosted, free HTTP interface to various Larg
 - No image generation features (removed - were blocked/non-functional)
 
 ## Recent Changes (2026-02-21)
-- **Migrated to new Replit project (2nd time)**: All URLs updated from `api-dzeck--mio7wxa.replit.app` to `https://project-p--cz8ihvdx.replit.app`.
-- **Fixed Firebase redirect paths**: Previously `/v1/chat/completions` was redirected to `/completions` (wrong). Now correctly redirects to `/v1/chat/completions`. Same fix for `/api/chat` -> was `/chat`, now correctly `/api/chat`.
-- **PRODUCTION_URL updated**: Server, deploy.sh, api-config.js, firebase.json all point to new domain `project-p--cz8ihvdx.replit.app`.
-- **Deploy config**: Set to autoscale deployment for production.
-- **Database**: New PostgreSQL database (fresh). API keys from old project are lost - need to regenerate. User `dzeckyete` auto-created on startup.
+- **Migrated to new Replit project (3rd time)**: All URLs updated from `project-p--cz8ihvdx.replit.app` to `https://project-p--keanun1.replit.app`.
+- **Fixed Firebase redirect paths**: All redirects now preserve full path prefixes (e.g., `/api/chat` -> `/api/chat`, `/v1/chat/completions` -> `/v1/chat/completions`). Wildcard redirects include proper path prefixes (`/api/apikeys/:splat` instead of `/:splat`).
+- **Provider name normalization**: "g4f", "gpt4free", "auto" now auto-mapped to "Auto" in validation, API key usage, and all chat endpoints. Prevents "provider not available" errors.
+- **Base URL sync**: API keys with old Replit domains auto-corrected to current production URL. Firebase URL (`https://api-dzeck.web.app`) preserved when selected.
 - **Firebase deployed**: Successfully deployed to https://api-dzeck.web.app with correct redirects.
+- **AI tested**: GPT-4 via PollinationsAI working. Test key: `sk-dzeck-4dc878c22330aaf876ac6c37b26f81f9393124cedd71b184`
+- **Virtual user**: dzeckyete / dzeckaiv1 (auto-created on startup)
 
 ## Changes (2026-02-20)
 - **Fixed Firebase API redirect**: firebase.json now has `redirects` for `/api/chat`, `/v1/chat/completions`, `/stream`, `/health`, `/ping` that 307-redirect to Replit backend. Previously, all paths were caught by the `**` rewrite to index.html, causing API calls to Firebase URL to return HTML instead of JSON.
