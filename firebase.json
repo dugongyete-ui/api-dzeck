@@ -9,27 +9,87 @@
     "redirects": [
       {
         "source": "/api/chat",
-        "destination": "https://api-dzeck--lizqz5hk.replit.app/api/chat",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/chat",
         "type": 307
       },
       {
         "source": "/v1/chat/completions",
-        "destination": "https://api-dzeck--lizqz5hk.replit.app/v1/chat/completions",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/v1/chat/completions",
         "type": 307
       },
       {
         "source": "/stream",
-        "destination": "https://api-dzeck--lizqz5hk.replit.app/stream",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/stream",
         "type": 307
       },
       {
         "source": "/health",
-        "destination": "https://api-dzeck--lizqz5hk.replit.app/health",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/health",
         "type": 307
       },
       {
         "source": "/ping",
-        "destination": "https://api-dzeck--lizqz5hk.replit.app/ping",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/ping",
+        "type": 307
+      },
+      {
+        "source": "/api/generate-token",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/generate-token",
+        "type": 307
+      },
+      {
+        "source": "/api/api-keys",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/api-keys",
+        "type": 307
+      },
+      {
+        "source": "/api/api-keys/**",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/api-keys/:splat",
+        "type": 307
+      },
+      {
+        "source": "/api/auth/**",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/auth/:splat",
+        "type": 307
+      },
+      {
+        "source": "/api/chat-history",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/chat-history",
+        "type": 307
+      },
+      {
+        "source": "/api/conversations",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/conversations",
+        "type": 307
+      },
+      {
+        "source": "/api/conversations/**",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/conversations/:splat",
+        "type": 307
+      },
+      {
+        "source": "/api/chat-settings",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/chat-settings",
+        "type": 307
+      },
+      {
+        "source": "/api/model-info",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/model-info",
+        "type": 307
+      },
+      {
+        "source": "/api/settings/**",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/settings/:splat",
+        "type": 307
+      },
+      {
+        "source": "/api/providers-data",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/providers-data",
+        "type": 307
+      },
+      {
+        "source": "/api/users/**",
+        "destination": "https://api-dzeck--mio7wxa.replit.app/api/users/:splat",
         "type": 307
       }
     ],

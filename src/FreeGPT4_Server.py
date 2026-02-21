@@ -60,7 +60,7 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = 86400 * 7
 app.config['SESSION_COOKIE_PATH'] = '/'
 
-PRODUCTION_URL = "https://api-dzeck--lizqz5hk.replit.app"
+PRODUCTION_URL = "https://api-dzeck--mio7wxa.replit.app"
 
 def _get_production_base_url():
     deploy_url = os.environ.get('REPLIT_DEPLOYMENT_URL', '')

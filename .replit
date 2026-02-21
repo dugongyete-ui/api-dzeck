@@ -2,7 +2,7 @@ modules = ["nodejs-20", "python-3.11", "postgresql-16"]
 
 [nix]
 channel = "stable-25_05"
-packages = ["coreutils", "firebase-tools", "iana-etc", "sqlite"]
+packages = ["coreutils", "firebase-tools", "iana-etc", "sqlite", "unzipNLS"]
 
 [agent]
 expertMode = true
